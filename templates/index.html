@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whisper Transcriber</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>Whisper Transcriber</h1>
+        <p>Upload an audio file, pick a model, and get instant text output in your preferred subtitle format.</p>
+      </header>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-messages">
+            {% for category, message in messages %}
+              <p class="flash {{ category }}">{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% if error %}
+        <div class="flash error">
+          {{ error }}
+        </div>
+      {% endif %}
+
+      <section class="card">
+        <form action="/" method="post" enctype="multipart/form-data">
+          <label class="field">
+            <span>Audio file</span>
+            <input type="file" name="audio_file" accept="audio/*" required />
+          </label>
+
+          <div class="field grid">
+            <label>
+              <span>Model</span>
+              <select name="model">
+                {% for model in supported_models %}
+                  <option value="{{ model }}" {% if model == selected_model %}selected{% endif %}>{{ model|capitalize }}</option>
+                {% endfor %}
+              </select>
+            </label>
+
+            <label>
+              <span>Output format</span>
+              <select name="format">
+                {% for fmt in supported_formats %}
+                  <option value="{{ fmt }}" {% if fmt == selected_format %}selected{% endif %}>{{ fmt|upper }}</option>
+                {% endfor %}
+              </select>
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Language (optional)</span>
+            <input type="text" placeholder="auto-detect" name="language" value="{{ language }}" />
+          </label>
+
+          <button type="submit">Transcribe</button>
+        </form>
+      </section>
+
+      {% if transcription %}
+        <section class="card">
+          <h2>Transcription</h2>
+          <textarea rows="12" readonly>{{ transcription }}</textarea>
+          <p class="hint">Copy the text or save it as needed. First request may take longer while the model downloads.</p>
+        </section>
+      {% endif %}
+    </main>
+  </body>
+</html>

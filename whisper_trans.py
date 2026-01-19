@@ -9,8 +9,12 @@ It supports various audio formats and provides multiple output options.
 import argparse
 import os
 import sys
-import whisper
 from typing import Optional
+
+import whisper
+
+SUPPORTED_MODELS = ["tiny", "base", "small", "medium", "large"]
+SUPPORTED_FORMATS = ["txt", "srt", "vtt"]
 
 
 def load_whisper_model(model_size: str = "base") -> whisper.Whisper:
@@ -67,33 +71,39 @@ def transcribe_audio(
     return result
 
 
-def save_transcription(result: dict, output_file: str, format: str = "txt") -> None:
-    """
-    Save transcription result to a file.
-    
-    Args:
-        result: Transcription result from Whisper
-        output_file: Path to the output file
-        format: Output format ('txt', 'srt', 'vtt')
-    """
+def build_transcription_output(result: dict, format: str = "txt") -> str:
+    """Return the transcription as a formatted string."""
+    format = format.lower()
+    if format not in SUPPORTED_FORMATS:
+        raise ValueError(f"Unsupported format: {format}")
+
     if format == "txt":
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(result["text"].strip())
-    elif format == "srt":
-        with open(output_file, "w", encoding="utf-8") as f:
-            for i, segment in enumerate(result["segments"], start=1):
-                start = format_timestamp(segment["start"])
-                end = format_timestamp(segment["end"])
-                text = segment["text"].strip()
-                f.write(f"{i}\n{start} --> {end}\n{text}\n\n")
-    elif format == "vtt":
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write("WEBVTT\n\n")
-            for segment in result["segments"]:
-                start = format_timestamp(segment["start"], always_include_hours=True)
-                end = format_timestamp(segment["end"], always_include_hours=True)
-                text = segment["text"].strip()
-                f.write(f"{start} --> {end}\n{text}\n\n")
+        return result["text"].strip()
+
+    if format == "srt":
+        blocks = []
+        for i, segment in enumerate(result["segments"], start=1):
+            start = format_timestamp(segment["start"])
+            end = format_timestamp(segment["end"])
+            text = segment["text"].strip()
+            blocks.append(f"{i}\n{start} --> {end}\n{text}\n")
+        return "\n".join(blocks).strip() + "\n"
+
+    # format == "vtt"
+    lines = ["WEBVTT", ""]
+    for segment in result["segments"]:
+        start = format_timestamp(segment["start"], always_include_hours=True)
+        end = format_timestamp(segment["end"], always_include_hours=True)
+        text = segment["text"].strip()
+        lines.append(f"{start} --> {end}\n{text}\n")
+    return "\n".join(lines).strip() + "\n"
+
+
+def save_transcription(result: dict, output_file: str, format: str = "txt") -> None:
+    """Persist a transcription result to disk."""
+    content = build_transcription_output(result, format)
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(content)
 
 
 def format_timestamp(seconds: float, always_include_hours: bool = False) -> str:
@@ -121,12 +131,10 @@ def main():
     parser = argparse.ArgumentParser(description="Convert audio to text using Whisper")
     parser.add_argument("audio_file", help="Path to the audio file")
     parser.add_argument("-o", "--output", help="Output file path")
-    parser.add_argument("-m", "--model", default="base", 
-                        choices=["tiny", "base", "small", "medium", "large"],
+    parser.add_argument("-m", "--model", default="base", choices=SUPPORTED_MODELS,
                         help="Model size (default: base)")
     parser.add_argument("-l", "--language", help="Language of the audio")
-    parser.add_argument("-f", "--format", default="txt", 
-                        choices=["txt", "srt", "vtt"],
+    parser.add_argument("-f", "--format", default="txt", choices=SUPPORTED_FORMATS,
                         help="Output format (default: txt)")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Verbose output")

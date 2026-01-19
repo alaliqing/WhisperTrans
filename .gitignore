@@ -1,3 +1,21 @@
-*.txt
-*.m4a
+# Python cache & env files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+.env
+.env.*
+
+# OS & editor files
+.DS_Store
 .vscode/
+
+# Audio/text artifacts
+*.srt
+*.vtt
+*.m4a
+*.mp3
+*.wav
+uploads/

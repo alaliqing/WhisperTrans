@@ -1,149 +1,88 @@
-# Whisper Audio Transcription Tools
+# Whisper Transcriber
 
-This repository contains Python scripts to convert audio files to text using OpenAI's Whisper model.
+Whisper Transcriber bundles a battle-tested command-line interface and a lightweight Flask web application for converting audio files to text using OpenAI's Whisper models. Upload a file, pick the model that fits your hardware, and download the transcript or subtitle output that best fits your workflow.
 
-## Files
+## Features
+- Command-line workflow for automation-friendly batch transcriptions.
+- Web UI with drag-and-drop style upload, model selection, format selection, and instant output.
+- TXT, SRT, and VTT generation powered by the same core formatting logic.
+- Re-usable helper functions (`whisper_trans.py`) so you can embed the transcriber elsewhere.
+- MIT-licensed with a tiny dependency footprint: Flask + Whisper.
 
-1. [whisper_trans.py](file:///Users/qinjing/Documents/codeData/private-program/whisper-trans/whisper_trans.py) - Command-line tool for audio transcription
-2. [launch.py](file:///Users/qinjing/Documents/codeData/private-program/whisper-trans/launch.py) - Interactive launcher with user-friendly interface
-
-## Installation
-
-Install the required dependencies:
-
-```bash
-pip install openai-whisper
+## Project Layout
+```
+├── whisper_trans.py   # CLI tool + reusable helpers
+├── web_app.py         # Flask application for the interactive UI
+├── templates/         # HTML template for the web UI
+├── static/            # Basic styling for the UI
+├── requirements.txt   # Minimal dependency spec
+└── LICENSE            # MIT license
 ```
 
-On some systems, you might also need to install `ffmpeg`:
+## Requirements
+- Python 3.9+
+- `ffmpeg` installed on your system (brew/apt/choco/etc.)
+- Whisper + Torch dependencies (pulled in automatically via `pip install -r requirements.txt`, see the note below for GPU wheels)
 
-- macOS: `brew install ffmpeg`
-- Ubuntu: `sudo apt install ffmpeg`
-- Windows: Download from https://ffmpeg.org/ or use `conda install ffmpeg`
+> **Torch wheels:** Whisper pulls in PyTorch. For CUDA-enabled installs use the [official wheel index](https://pytorch.org/get-started/locally/) by running `pip install 'torch==2.2.*' 'torchaudio==2.2.*' --index-url https://download.pytorch.org/whl/cu121` before installing the rest of the dependencies.
 
-For GPU acceleration (optional but recommended):
-
+## Setup
 ```bash
-pip install torch torchvision torchaudio
+python3 -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
+The first transcription for each model downloads ~75 MB–3 GB of model weights. Subsequent runs re-use the cached weights located in `~/.cache/whisper/`.
 
-## Usage
-
-### Method 1: Command-line Interface
-
-Use [whisper_trans.py](file:///Users/qinjing/Documents/codeData/private-program/whisper-trans/whisper_trans.py) directly with command-line arguments:
-
+## Command-line usage
+Run the CLI against any audio/video file that `ffmpeg` can read:
 ```bash
-# Basic usage
-python whisper_trans.py audio.mp3
-
-# With options
-python whisper_trans.py audio.mp3 --model large --language English --format srt
+python whisper_trans.py path/to/audio.mp3 \
+  --model small \
+  --language English \
+  --format srt \
+  --output meeting.srt
 ```
+**Flags**
+- `audio_file` (positional): file to transcribe.
+- `-m / --model`: one of `tiny`, `base`, `small`, `medium`, `large` (`base` default).
+- `-l / --language`: language hint. Leave blank for auto-detect.
+- `-f / --format`: `txt`, `srt`, or `vtt` (`txt` default).
+- `-o / --output`: explicit output path. Defaults to `<input>.<format>`.
+- `-v / --verbose`: pass through Whisper's verbose output.
 
-#### Command-line Options
-
-- `audio_file` - Path to the input audio file (required)
-- `-m, --model` - Model size: tiny, base, small, medium, large (default: base)
-- `-l, --language` - Language of the audio (default: auto-detect)
-- `-f, --format` - Output format: txt, srt, vtt (default: txt)
-- `-o, --output` - Output file path (default: same name as input with appropriate extension)
-- `-v, --verbose` - Enable verbose output
-
-### Method 2: Interactive Launcher
-
-Use [launch.py](file:///Users/qinjing/Documents/codeData/private-program/whisper-trans/launch.py) for a guided experience:
-
+## Web application
+Launch the interactive UI with:
 ```bash
-python launch.py
+export FLASK_SECRET_KEY="dev"   # optional but recommended
+python web_app.py
 ```
+Then open [http://localhost:5000](http://localhost:5000) and:
+1. Upload an audio file (any format supported by ffmpeg).
+2. Pick the Whisper model (first use downloads the weights).
+3. Choose the output format and optional language hint.
+4. Click **Transcribe** to view the result directly in the browser.
 
-The interactive launcher will guide you through:
-1. Selecting your audio file
-2. Choosing the model size
-3. Specifying the language (optional)
-4. Selecting the output format
-5. Setting the output file name
+**Environment knobs**
+- `PORT`: change the listen port (defaults to `5000`).
+- `FLASK_SECRET_KEY`: secret key used for flash messages.
+- `MAX_UPLOAD_SIZE`: max upload size in MB (defaults to `200`).
 
-Follow the on-screen prompts to configure your transcription.
+Use `flask --app web_app run --reload` for an auto-reloading development server.
 
-## Model Sizes
+## Output format cheat sheet
+| Format | Use case |
+| ------ | -------- |
+| TXT    | Simple transcripts for search or documentation.
+| SRT    | Drop-in subtitles for most video players/editors.
+| VTT    | Web-native captions for HTML5 video.
 
-Different models offer trade-offs between speed, accuracy, and resource usage:
-
-| Model  | Disk Space | Relative Speed | Required VRAM |
-|--------|------------|----------------|---------------|
-| tiny   | 75 MB      | ~32x           | ~1 GB         |
-| base   | 145 MB     | ~16x           | ~1 GB         |
-| small  | 485 MB     | ~6x            | ~2 GB         |
-| medium | 1.5 GB     | ~2x            | ~5 GB         |
-| large  | 3 GB       | 1x             | ~10 GB        |
-
-Notes:
-- Models are automatically downloaded on first use and cached locally
-- Larger models are more accurate but slower
-- GPU recommended for larger models
-- For quick transcriptions of clear audio, use "base" or "small"
-- For high-quality transcriptions of noisy audio, use "large"
-
-## Supported Formats
-
-Input formats (depends on ffmpeg):
-- MP3
-- WAV
-- M4A
-- FLAC
-- AAC
-- OGG
-- And more
-
-Output formats:
-- TXT (plain text)
-- SRT (SubRip subtitle)
-- VTT (Web Video Text Tracks)
-
-## Examples
-
-### Command-line Examples
-
-```bash
-# Quick transcription of a podcast
-python whisper_trans.py podcast.mp3 --model base
-
-# High quality transcription of an interview
-python whisper_trans.py interview.wav --model large --language English
-
-# Create subtitles for a video
-python whisper_trans.py video_audio.mp3 --format srt --output subtitles.srt
-
-# Transcribe a multilingual meeting
-python whisper_trans.py meeting.mp3 --model large
-```
-
-### Interactive Examples
-
-Simply run the launcher and follow the prompts:
-
-```bash
-python launch.py
-```
-
-## Troubleshooting
-
-1. **Installation Issues**
-   - Make sure you have Python 3.8 or higher
-   - If you encounter CUDA errors, try: `pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
-
-2. **Performance**
-   - For faster processing, use a GPU if available
-   - Smaller models are significantly faster
-   - For long audio files, consider breaking them into smaller segments
-
-3. **Accuracy**
-   - Specify the language if known
-   - Use a larger model for better accuracy
-   - Ensure good audio quality for best results
+## Troubleshooting & Tips
+- **Model download stalls**: verify your network connection and retry; Whisper caches models once downloaded.
+- **CUDA errors**: install the matching Torch version for your CUDA runtime or run on CPU by omitting GPU-specific installs.
+- **Performance**: start with `base` or `small` unless you need top-tier accuracy; they use <2 GB VRAM and are significantly faster.
+- **Accuracy**: specify `--language` or fill in the language field in the UI when you already know it—this skips auto-detection.
 
 ## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the [MIT License](LICENSE).
