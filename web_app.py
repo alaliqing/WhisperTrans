@@ -90,5 +90,34 @@ def index():
 
 
 if __name__ == "__main__":
+    import socket
+    
+    # Get port from environment variable, default to 5000
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    
+    # Check if the default port is available, if not try to find an available one
+    def check_port_availability(port_num):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind(("0.0.0.0", port_num))
+                return True, port_num
+            except OSError:
+                # Port is in use, try to find next available port
+                return False, port_num
+
+    # Try the specified port first
+    is_available, _ = check_port_availability(port)
+    
+    if is_available:
+        app.run(host="0.0.0.0", port=port)
+    else:
+        # Find next available port starting from the default
+        print(f"Port {port} is in use, trying to find an available port...")
+        for attempt_port in range(port, port + 100):  # Try next 100 ports
+            is_available, _ = check_port_availability(attempt_port)
+            if is_available:
+                print(f"Starting server on port {attempt_port}")
+                app.run(host="0.0.0.0", port=attempt_port)
+                break
+        else:
+            print("Could not find an available port. Please free up a port in the range and try again.")
