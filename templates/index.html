@@ -8,16 +8,18 @@
   </head>
   <body>
     <main class="container">
-      <header>
-        <h1>Whisper Transcriber</h1>
-        <p>Upload an audio file, pick a model, and get instant text output in your preferred subtitle format.</p>
+      <header class="header">
+        <div class="logo-section">
+          <h1>Whisper Transcriber</h1>
+          <p>Upload an audio file, pick a model, and get instant text output in your preferred format.</p>
+        </div>
       </header>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           <div class="flash-messages">
             {% for category, message in messages %}
-              <p class="flash {{ category }}">{{ message }}</p>
+              <div class="flash {{ category }}">{{ message }}</div>
             {% endfor %}
           </div>
         {% endif %}
@@ -31,47 +33,252 @@
 
       <section class="card">
         <form action="/" method="post" enctype="multipart/form-data">
-          <label class="field">
-            <span>Audio file</span>
-            <input type="file" name="audio_file" accept="audio/*" required />
-          </label>
+          <div class="upload-section">
+            <label class="field file-upload">
+              <span>Audio file</span>
+              <div class="file-input-wrapper">
+                <input type="file" name="audio_file" accept="audio/*" required />
+                <span class="file-input-button">Choose File</span>
+                <span class="file-input-label">No file chosen</span>
+              </div>
+            </label>
+          </div>
 
-          <div class="field grid">
-            <label>
+          <div class="options-grid">
+            <label class="field">
               <span>Model</span>
               <select name="model">
                 {% for model in supported_models %}
-                  <option value="{{ model }}" {% if model == selected_model %}selected{% endif %}>{{ model|capitalize }}</option>
+                  <option value="{{ model }}" {% if model == selected_model %}selected{% endif %}>
+                    {{ model|capitalize }}
+                  </option>
                 {% endfor %}
               </select>
             </label>
 
-            <label>
+            <label class="field">
               <span>Output format</span>
               <select name="format">
                 {% for fmt in supported_formats %}
-                  <option value="{{ fmt }}" {% if fmt == selected_format %}selected{% endif %}>{{ fmt|upper }}</option>
+                  <option value="{{ fmt }}" {% if fmt == selected_format %}selected{% endif %}>
+                    {{ fmt|upper }}
+                  </option>
                 {% endfor %}
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Language</span>
+              <select name="language">
+                <option value="" {% if not language %}selected{% endif %}>Auto-detect</option>
+                <option value="en" {% if language == 'en' %}selected{% endif %}>English</option>
+                <option value="zh" {% if language == 'zh' %}selected{% endif %}>Chinese</option>
+                <option value="de" {% if language == 'de' %}selected{% endif %}>German</option>
+                <option value="es" {% if language == 'es' %}selected{% endif %}>Spanish</option>
+                <option value="ru" {% if language == 'ru' %}selected{% endif %}>Russian</option>
+                <option value="ko" {% if language == 'ko' %}selected{% endif %}>Korean</option>
+                <option value="fr" {% if language == 'fr' %}selected{% endif %}>French</option>
+                <option value="ja" {% if language == 'ja' %}selected{% endif %}>Japanese</option>
+                <option value="pt" {% if language == 'pt' %}selected{% endif %}>Portuguese</option>
+                <option value="tr" {% if language == 'tr' %}selected{% endif %}>Turkish</option>
+                <option value="pl" {% if language == 'pl' %}selected{% endif %}>Polish</option>
+                <option value="ca" {% if language == 'ca' %}selected{% endif %}>Catalan</option>
+                <option value="nl" {% if language == 'nl' %}selected{% endif %}>Dutch</option>
+                <option value="ar" {% if language == 'ar' %}selected{% endif %}>Arabic</option>
+                <option value="sv" {% if language == 'sv' %}selected{% endif %}>Swedish</option>
+                <option value="it" {% if language == 'it' %}selected{% endif %}>Italian</option>
+                <option value="id" {% if language == 'id' %}selected{% endif %}>Indonesian</option>
+                <option value="hi" {% if language == 'hi' %}selected{% endif %}>Hindi</option>
+                <option value="fi" {% if language == 'fi' %}selected{% endif %}>Finnish</option>
+                <option value="vi" {% if language == 'vi' %}selected{% endif %}>Vietnamese</option>
+                <option value="he" {% if language == 'he' %}selected{% endif %}>Hebrew</option>
+                <option value="uk" {% if language == 'uk' %}selected{% endif %}>Ukrainian</option>
+                <option value="el" {% if language == 'el' %}selected{% endif %}>Greek</option>
+                <option value="ms" {% if language == 'ms' %}selected{% endif %}>Malay</option>
+                <option value="cs" {% if language == 'cs' %}selected{% endif %}>Czech</option>
+                <option value="ro" {% if language == 'ro' %}selected{% endif %}>Romanian</option>
+                <option value="da" {% if language == 'da' %}selected{% endif %}>Danish</option>
+                <option value="hu" {% if language == 'hu' %}selected{% endif %}>Hungarian</option>
+                <option value="ta" {% if language == 'ta' %}selected{% endif %}>Tamil</option>
+                <option value="no" {% if language == 'no' %}selected{% endif %}>Norwegian</option>
+                <option value="th" {% if language == 'th' %}selected{% endif %}>Thai</option>
+                <option value="ur" {% if language == 'ur' %}selected{% endif %}>Urdu</option>
+                <option value="hr" {% if language == 'hr' %}selected{% endif %}>Croatian</option>
+                <option value="bg" {% if language == 'bg' %}selected{% endif %}>Bulgarian</option>
+                <option value="lt" {% if language == 'lt' %}selected{% endif %}>Lithuanian</option>
+                <option value="la" {% if language == 'la' %}selected{% endif %}>Latin</option>
+                <option value="mi" {% if language == 'mi' %}selected{% endif %}>Maori</option>
+                <option value="ml" {% if language == 'ml' %}selected{% endif %}>Malayalam</option>
+                <option value="cy" {% if language == 'cy' %}selected{% endif %}>Welsh</option>
+                <option value="sk" {% if language == 'sk' %}selected{% endif %}>Slovak</option>
+                <option value="te" {% if language == 'te' %}selected{% endif %}>Telugu</option>
+                <option value="fa" {% if language == 'fa' %}selected{% endif %}>Persian</option>
+                <option value="lv" {% if language == 'lv' %}selected{% endif %}>Latvian</option>
+                <option value="bn" {% if language == 'bn' %}selected{% endif %}>Bengali</option>
+                <option value="sr" {% if language == 'sr' %}selected{% endif %}>Serbian</option>
+                <option value="az" {% if language == 'az' %}selected{% endif %}>Azerbaijani</option>
+                <option value="sl" {% if language == 'sl' %}selected{% endif %}>Slovenian</option>
+                <option value="kn" {% if language == 'kn' %}selected{% endif %}>Kannada</option>
+                <option value="et" {% if language == 'et' %}selected{% endif %}>Estonian</option>
+                <option value="mk" {% if language == 'mk' %}selected{% endif %}>Macedonian</option>
+                <option value="br" {% if language == 'br' %}selected{% endif %}>Breton</option>
+                <option value="eu" {% if language == 'eu' %}selected{% endif %}>Basque</option>
+                <option value="is" {% if language == 'is' %}selected{% endif %}>Icelandic</option>
+                <option value="hy" {% if language == 'hy' %}selected{% endif %}>Armenian</option>
+                <option value="ne" {% if language == 'ne' %}selected{% endif %}>Nepali</option>
+                <option value="mn" {% if language == 'mn' %}selected{% endif %}>Mongolian</option>
+                <option value="bs" {% if language == 'bs' %}selected{% endif %}>Bosnian</option>
+                <option value="kk" {% if language == 'kk' %}selected{% endif %}>Kazakh</option>
+                <option value="sq" {% if language == 'sq' %}selected{% endif %}>Albanian</option>
+                <option value="sw" {% if language == 'sw' %}selected{% endif %}>Swahili</option>
+                <option value="gl" {% if language == 'gl' %}selected{% endif %}>Galician</option>
+                <option value="mr" {% if language == 'mr' %}selected{% endif %}>Marathi</option>
+                <option value="pa" {% if language == 'pa' %}selected{% endif %}>Punjabi</option>
+                <option value="si" {% if language == 'si' %}selected{% endif %}>Sinhala</option>
+                <option value="km" {% if language == 'km' %}selected{% endif %}>Khmer</option>
+                <option value="sn" {% if language == 'sn' %}selected{% endif %}>Shona</option>
+                <option value="yo" {% if language == 'yo' %}selected{% endif %}>Yoruba</option>
+                <option value="so" {% if language == 'so' %}selected{% endif %}>Somali</option>
+                <option value="af" {% if language == 'af' %}selected{% endif %}>Afrikaans</option>
+                <option value="oc" {% if language == 'oc' %}selected{% endif %}>Occitan</option>
+                <option value="ka" {% if language == 'ka' %}selected{% endif %}>Georgian</option>
+                <option value="be" {% if language == 'be' %}selected{% endif %}>Belarusian</option>
+                <option value="tg" {% if language == 'tg' %}selected{% endif %}>Tajik</option>
+                <option value="sd" {% if language == 'sd' %}selected{% endif %}>Sindhi</option>
+                <option value="gu" {% if language == 'gu' %}selected{% endif %}>Gujarati</option>
+                <option value="am" {% if language == 'am' %}selected{% endif %}>Amharic</option>
+                <option value="yi" {% if language == 'yi' %}selected{% endif %}>Yiddish</option>
+                <option value="lo" {% if language == 'lo' %}selected{% endif %}>Lao</option>
+                <option value="uz" {% if language == 'uz' %}selected{% endif %}>Uzbek</option>
+                <option value="fo" {% if language == 'fo' %}selected{% endif %}>Faroese</option>
+                <option value="ht" {% if language == 'ht' %}selected{% endif %}>Haitian Creole</option>
+                <option value="ps" {% if language == 'ps' %}selected{% endif %}>Pashto</option>
+                <option value="tk" {% if language == 'tk' %}selected{% endif %}>Turkmen</option>
+                <option value="nn" {% if language == 'nn' %}selected{% endif %}>Nynorsk</option>
+                <option value="mt" {% if language == 'mt' %}selected{% endif %}>Maltese</option>
+                <option value="sa" {% if language == 'sa' %}selected{% endif %}>Sanskrit</option>
+                <option value="lb" {% if language == 'lb' %}selected{% endif %}>Luxembourgish</option>
+                <option value="my" {% if language == 'my' %}selected{% endif %}>Myanmar</option>
+                <option value="bo" {% if language == 'bo' %}selected{% endif %}>Tibetan</option>
+                <option value="tl" {% if language == 'tl' %}selected{% endif %}>Tagalog</option>
+                <option value="mg" {% if language == 'mg' %}selected{% endif %}>Malagasy</option>
+                <option value="as" {% if language == 'as' %}selected{% endif %}>Assamese</option>
+                <option value="tt" {% if language == 'tt' %}selected{% endif %}>Tatar</option>
+                <option value="haw" {% if language == 'haw' %}selected{% endif %}>Hawaiian</option>
+                <option value="ln" {% if language == 'ln' %}selected{% endif %}>Lingala</option>
+                <option value="ha" {% if language == 'ha' %}selected{% endif %}>Hausa</option>
+                <option value="ba" {% if language == 'ba' %}selected{% endif %}>Bashkir</option>
+                <option value="jw" {% if language == 'jw' %}selected{% endif %}>Javanese</option>
+                <option value="su" {% if language == 'su' %}selected{% endif %}>Sundanese</option>
               </select>
             </label>
           </div>
 
-          <label class="field">
-            <span>Language (optional)</span>
-            <input type="text" placeholder="auto-detect" name="language" value="{{ language }}" />
-          </label>
-
-          <button type="submit">Transcribe</button>
+          <button type="submit" class="primary-btn">Transcribe Audio</button>
         </form>
       </section>
 
       {% if transcription %}
-        <section class="card">
-          <h2>Transcription</h2>
-          <textarea rows="12" readonly>{{ transcription }}</textarea>
-          <p class="hint">Copy the text or save it as needed. First request may take longer while the model downloads.</p>
+        <section class="card transcription-card">
+          <div class="transcription-header">
+            <h2>Transcription Result</h2>
+            <div class="action-buttons">
+              <button id="copyBtn" class="action-btn" title="Copy to clipboard">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16 1H4C2.89543 1 2 1.89543 2 3V17H4V3H16V1Z" fill="currentColor"/>
+                  <path d="M15 5H18C19.1046 5 20 5.89543 20 7V21C20 22.1046 19.1046 23 18 23H8C6.89543 23 6 22.1046 6 21V7C6 5.89543 6.89543 5 8 5H11V3H8C5.79086 3 4 4.79086 4 7V21C4 23.2091 5.79086 25 8 25H18C20.2091 25 22 23.2091 22 21V7C22 4.79086 20.2091 3 18 3H15V5Z" fill="currentColor"/>
+                </svg>
+                Copy
+              </button>
+              <a id="downloadLink" class="action-btn" title="Download as file">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 16L16 11H13V4H11V11H8L12 16ZM20 18H4V11H2V18C2 19.103 2.897 20 4 20H20C21.103 20 22 19.103 22 18V11H20V18Z" fill="currentColor"/>
+                </svg>
+                Download
+              </a>
+            </div>
+          </div>
+          
+          <div class="transcription-content">
+            <pre id="transcriptionText" class="transcription-text">{{ transcription }}</pre>
+          </div>
+          
+          <p class="hint">First request may take longer while the model downloads.</p>
         </section>
       {% endif %}
     </main>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Update file input label when a file is selected
+        const fileInput = document.querySelector('input[type="file"]');
+        const fileInputLabel = document.querySelector('.file-input-label');
+        
+        if (fileInput && fileInputLabel) {
+          fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+              fileInputLabel.textContent = this.files[0].name;
+            } else {
+              fileInputLabel.textContent = 'No file chosen';
+            }
+          });
+        }
+        
+        // Copy to clipboard functionality
+        const copyBtn = document.getElementById('copyBtn');
+        if (copyBtn) {
+          copyBtn.addEventListener('click', function() {
+            const transcriptionText = document.getElementById('transcriptionText');
+            const textToCopy = transcriptionText.textContent || transcriptionText.innerText;
+            
+            navigator.clipboard.writeText(textToCopy)
+              .then(() => {
+                // Show feedback
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<span>Copied!</span>';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                  copyBtn.innerHTML = originalText;
+                  copyBtn.classList.remove('copied');
+                }, 2000);
+              })
+              .catch(err => {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy text to clipboard');
+              });
+          });
+        }
+        
+        // Download functionality
+        const downloadLink = document.getElementById('downloadLink');
+        const transcriptionText = document.getElementById('transcriptionText');
+        if (downloadLink && transcriptionText) {
+          downloadLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const content = transcriptionText.textContent || transcriptionText.innerText;
+            const format = "{{ selected_format }}";
+            const filename = `transcription.${format}`;
+            
+            // Create blob and download link
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            
+            // Clean up
+            setTimeout(() => {
+              document.body.removeChild(a);
+              window.URL.revokeObjectURL(url);
+            }, 100);
+          });
+        }
+      });
+    </script>
   </body>
 </html>
