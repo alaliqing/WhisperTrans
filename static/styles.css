@@ -110,11 +110,11 @@ body {
   cursor: pointer;
 }
 
-.file-input-button {
+.file-input-wrapper .file-input-button {
   display: inline-block;
   padding: var(--spacing-md) var(--spacing-lg);
   background: var(--primary-color);
-  color: white;
+  color: white !important;
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: background 0.2s ease;
@@ -122,7 +122,7 @@ body {
   font-weight: 500;
 }
 
-.file-input-button:hover {
+.file-input-wrapper .file-input-button:hover {
   background: var(--primary-hover);
 }
 
