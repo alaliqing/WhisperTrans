@@ -129,6 +129,8 @@ body {
 .drop-zone-content {
   pointer-events: none;
   transition: transform 0.2s ease;
+  position: relative;
+  z-index: 2;
 }
 
 .drop-zone-icon {
@@ -170,11 +172,7 @@ body {
   height: 100%;
   opacity: 0;
   cursor: pointer;
-  display: none;
-}
-
-.drop-zone.has-file .hidden-file-input {
-  display: block;
+  z-index: 1;
 }
 
 /* File preview container */

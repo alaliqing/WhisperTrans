@@ -260,11 +260,6 @@
           handleFiles(files);
         }
 
-        // Handle click to browse
-        dropZone.addEventListener('click', function() {
-          audioFileInput.click();
-        });
-
         // Handle file input change
         audioFileInput.addEventListener('change', function() {
           handleFiles(this.files);
