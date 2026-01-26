@@ -34,13 +34,20 @@
       <section class="card">
         <form action="/" method="post" enctype="multipart/form-data">
           <div class="upload-section">
-            <label class="field file-upload">
+            <label class="field">
               <span>Audio file</span>
-              <div class="file-input-wrapper">
-                <input type="file" name="audio_file" accept="audio/*" required />
-                <span class="file-input-button">Choose File</span>
-                <span class="file-input-label">No file chosen</span>
+              <div id="dropZone" class="drop-zone">
+                <div class="drop-zone-content">
+                  <svg class="drop-zone-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" fill="currentColor"/>
+                  </svg>
+                  <p class="drop-zone-text">Drag & drop your audio file here</p>
+                  <p class="drop-zone-hint">or click to browse</p>
+                  <p class="drop-zone-formats">Supported: MP3, WAV, OGG, FLAC, M4A</p>
+                </div>
+                <input type="file" id="audioFileInput" name="audio_file" accept="audio/*" required class="hidden-file-input" />
               </div>
+              <div id="filePreviewContainer" class="file-preview-container"></div>
             </label>
           </div>
 
@@ -210,18 +217,145 @@
     
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Update file input label when a file is selected
-        const fileInput = document.querySelector('input[type="file"]');
-        const fileInputLabel = document.querySelector('.file-input-label');
-        
-        if (fileInput && fileInputLabel) {
-          fileInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-              fileInputLabel.textContent = this.files[0].name;
-            } else {
-              fileInputLabel.textContent = 'No file chosen';
-            }
+        // Drag and drop functionality
+        const dropZone = document.getElementById('dropZone');
+        const audioFileInput = document.getElementById('audioFileInput');
+        const filePreviewContainer = document.getElementById('filePreviewContainer');
+        let currentFile = null;
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+          dropZone.addEventListener(eventName, preventDefaults, false);
+          document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+        // Highlight drop zone when dragging files over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+          dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+          dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+          dropZone.classList.add('dragover');
+        }
+
+        function unhighlight() {
+          dropZone.classList.remove('dragover');
+        }
+
+        // Handle dropped files
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+          const dt = e.dataTransfer;
+          const files = dt.files;
+          handleFiles(files);
+        }
+
+        // Handle click to browse
+        dropZone.addEventListener('click', function() {
+          audioFileInput.click();
+        });
+
+        // Handle file input change
+        audioFileInput.addEventListener('change', function() {
+          handleFiles(this.files);
+        });
+
+        // Process files
+        function handleFiles(files) {
+          if (files.length === 0) return;
+          
+          const file = files[0];
+          
+          // Validate file type
+          if (!file.type.startsWith('audio/')) {
+            alert('Please upload an audio file (MP3, WAV, OGG, FLAC, M4A)');
+            return;
+          }
+
+          // Update current file
+          currentFile = file;
+          
+          // Update file input
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          audioFileInput.files = dataTransfer.files;
+
+          // Show file preview
+          showFilePreview(file);
+        }
+
+        // Display file preview
+        function showFilePreview(file) {
+          filePreviewContainer.innerHTML = '';
+          
+          const previewCard = document.createElement('div');
+          previewCard.className = 'file-preview-card';
+          
+          const fileSize = formatFileSize(file.size);
+          
+          previewCard.innerHTML = `
+            <div class="file-preview-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="file-preview-info">
+              <div class="file-preview-name">${escapeHtml(file.name)}</div>
+              <div class="file-preview-size">${fileSize}</div>
+            </div>
+            <button type="button" class="file-preview-delete" title="Remove file" aria-label="Remove file">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/>
+              </svg>
+            </button>
+          `;
+          
+          filePreviewContainer.appendChild(previewCard);
+          
+          // Add delete functionality
+          const deleteBtn = previewCard.querySelector('.file-preview-delete');
+          deleteBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            removeFile();
           });
+        }
+
+        // Remove file
+        function removeFile() {
+          currentFile = null;
+          audioFileInput.value = '';
+          filePreviewContainer.innerHTML = '';
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+          if (bytes === 0) return '0 Bytes';
+          const k = 1024;
+          const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+          const i = Math.floor(Math.log(bytes) / Math.log(k));
+          return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+          const map = {
+            '&': '&',
+            '<': '<',
+            '>': '>',
+            '"': '"',
+            "'": '&#039;'
+          };
+          return text.replace(/[&<>"']/g, function(m) { return map[m]; });
         }
         
         // Copy to clipboard functionality
