@@ -183,6 +183,13 @@
 
           <button type="submit" class="primary-btn">Transcribe Audio</button>
         </form>
+        
+        <!-- Loading indicator -->
+        <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+          <div class="loading-spinner"></div>
+          <p class="loading-text">Transcribing audio file...</p>
+          <p class="loading-subtext">This may take a few moments depending on file size and model.</p>
+        </div>
       </section>
 
       {% if transcription %}
@@ -356,6 +363,26 @@
             "'": '&#039;'
           };
           return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+        
+        // Show loading indicator when form is submitted
+        const form = document.querySelector('form');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        
+        if (form && loadingIndicator) {
+          form.addEventListener('submit', function(e) {
+            // Check if file is selected
+            const fileInput = document.getElementById('audioFileInput');
+            if (!fileInput.files || fileInput.files.length === 0) {
+              return;
+            }
+            
+            // Show loading indicator
+            loadingIndicator.style.display = 'flex';
+            
+            // Hide the upload form during processing
+            form.style.display = 'none';
+          });
         }
         
         // Copy to clipboard functionality
