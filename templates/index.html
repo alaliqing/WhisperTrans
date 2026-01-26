@@ -317,10 +317,14 @@
           
           filePreviewContainer.appendChild(previewCard);
           
+          // Hide the drop zone file input to prevent it from covering the preview
+          audioFileInput.style.display = 'none';
+          
           // Add delete functionality
           const deleteBtn = previewCard.querySelector('.file-preview-delete');
           deleteBtn.addEventListener('click', function(e) {
             e.stopPropagation();
+            e.preventDefault();
             removeFile();
           });
         }
@@ -329,6 +333,7 @@
         function removeFile() {
           currentFile = null;
           audioFileInput.value = '';
+          audioFileInput.style.display = 'block';
           filePreviewContainer.innerHTML = '';
         }
 
