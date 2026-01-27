@@ -8,7 +8,7 @@ import shutil
 import tempfile
 from typing import Dict
 
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, url_for
 from werkzeug.utils import secure_filename
 
 from whisper_trans import (
@@ -44,14 +44,27 @@ def get_model(model_size: str):
 def index():
     transcription_text = None
     error = None
-    selected_model = request.form.get("model", "base")
-    if selected_model not in SUPPORTED_MODELS:
-        selected_model = "base"
+    
+    # Retrieve flashed transcription result from previous POST
+    for message in get_flashed_messages(with_categories=True):
+        category, message_text = message
+        if category == "transcription":
+            transcription_text = message_text
+        elif category == "error":
+            error = message_text
+    if request.method == "POST":
+        selected_model = request.form.get("model", "base")
+        if selected_model not in SUPPORTED_MODELS:
+            selected_model = "base"
 
-    selected_format = request.form.get("format", "txt")
-    if selected_format not in SUPPORTED_FORMATS:
+        selected_format = request.form.get("format", "txt")
+        if selected_format not in SUPPORTED_FORMATS:
+            selected_format = "txt"
+        language = request.form.get("language", "")
+    else:
+        selected_model = "base"
         selected_format = "txt"
-    language = request.form.get("language", "")
+        language = ""
 
     if request.method == "POST":
         upload = request.files.get("audio_file")
@@ -72,6 +85,8 @@ def index():
             model = get_model(selected_model)
             result = transcribe_audio(model, file_path, language=language.strip() or None)
             transcription_text = build_transcription_output(result, selected_format)
+            flash(transcription_text, "transcription")
+            return redirect(url_for("index"))
         except Exception as exc:  # pragma: no cover - surfacing to UI
             error = str(exc)
         finally:

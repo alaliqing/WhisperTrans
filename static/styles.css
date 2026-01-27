@@ -81,6 +81,11 @@ body {
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
+/* Ensure first card maintains consistent positioning */
+.card:first-of-type {
+  margin-top: var(--spacing-xl);
+}
+
 .card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-xl);
