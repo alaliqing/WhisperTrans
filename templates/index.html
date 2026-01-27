@@ -33,7 +33,8 @@
         </div>
       {% endif %}
 
-      <section class="card">
+      <!-- Main fixed card -->
+      <section class="card main-card">
         <form action="/" method="post" enctype="multipart/form-data">
           <div class="upload-section">
             <label class="field">
@@ -183,19 +184,22 @@
             </label>
           </div>
 
-          <button type="submit" class="primary-btn">Transcribe Audio</button>
+          <button type="submit" class="primary-btn" id="transcribeBtn">Transcribe Audio</button>
         </form>
-        
+      </section>
+
+      <!-- Loading and Results Area -->
+      <section class="results-area" id="resultsArea" style="display: none;">
         <!-- Loading indicator -->
         <div id="loadingIndicator" class="loading-indicator" style="display: none;">
           <div class="loading-spinner"></div>
           <p class="loading-text">Transcribing audio file...</p>
           <p class="loading-subtext">This may take a few moments depending on file size and model.</p>
         </div>
-      </section>
 
-      {% if transcription %}
-        <section class="card transcription-card">
+        <!-- Transcription result -->
+        {% if transcription %}
+        <div id="transcriptionCard" class="card transcription-card" style="display: block;">
           <div class="transcription-header">
             <h2>Transcription Result</h2>
             <div class="action-buttons">
@@ -220,8 +224,9 @@
           </div>
           
           <p class="hint">First request may take longer while the model downloads.</p>
-        </section>
-      {% endif %}
+        </div>
+        {% endif %}
+      </section>
     </main>
     
     <script>
@@ -370,8 +375,10 @@
         // Show loading indicator when form is submitted
         const form = document.querySelector('form');
         const loadingIndicator = document.getElementById('loadingIndicator');
+        const resultsArea = document.getElementById('resultsArea');
+        const transcribeBtn = document.getElementById('transcribeBtn');
         
-        if (form && loadingIndicator) {
+        if (form && loadingIndicator && resultsArea) {
           form.addEventListener('submit', function(e) {
             // Check if file is selected
             const fileInput = document.getElementById('audioFileInput');
@@ -379,12 +386,32 @@
               return;
             }
             
+            // Show results area
+            resultsArea.style.display = 'block';
+            
             // Show loading indicator
             loadingIndicator.style.display = 'flex';
             
-            // Hide the upload form during processing
-            form.style.display = 'none';
+            // Hide transcription card if it exists
+            const transcriptionCard = document.getElementById('transcriptionCard');
+            if (transcriptionCard) {
+              transcriptionCard.style.display = 'none';
+            }
+            
+            // Disable the transcribe button
+            if (transcribeBtn) {
+              transcribeBtn.disabled = true;
+              transcribeBtn.textContent = 'Processing...';
+            }
           });
+        }
+        
+        // If transcription exists on page load, show results area
+        if (document.getElementById('transcriptionText')) {
+          const resultsArea = document.getElementById('resultsArea');
+          if (resultsArea) {
+            resultsArea.style.display = 'block';
+          }
         }
         
         // Copy to clipboard functionality
