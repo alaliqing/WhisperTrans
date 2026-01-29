@@ -30,7 +30,7 @@ brew install git
 Then clone the repository:
 
 ```bash
-git clone https://github.com/your-username/WhisperTrans.git
+git clone https://github.com/alaliqing/WhisperTrans.git
 cd WhisperTrans
 ```
 
@@ -38,10 +38,9 @@ cd WhisperTrans
 
 If you don't use git:
 
-1. Go to: https://github.com/your-username/WhisperTrans
-2. Click "Code" → "Download ZIP"
-3. Extract to ZIP file
-4. Open terminal in the extracted folder
+1. Click "Code" → "Download ZIP"
+2. Extract to ZIP file
+3. Open terminal in the extracted folder
 
 ### 1. Setup (One-time)
 
