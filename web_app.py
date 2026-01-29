@@ -113,10 +113,13 @@ def index():
 
 if __name__ == "__main__":
     import socket
-    
+    import webbrowser
+    import threading
+    import time
+
     # Get port from environment variable, default to 5000
     port = int(os.environ.get("PORT", 5000))
-    
+
     # Check if the default port is available, if not try to find an available one
     def check_port_availability(port_num):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -127,10 +130,22 @@ if __name__ == "__main__":
                 # Port is in use, try to find next available port
                 return False, port_num
 
+    def open_browser(url):
+        """Open browser after a short delay to ensure server is ready."""
+        time.sleep(1.5)  # Wait for server to start
+        webbrowser.open(url)
+        print(f"\n✓ WhisperTrans is running at: {url}")
+        print("✓ Web interface opened in your default browser")
+        print("✓ Press Ctrl+C to stop the server\n")
+
     # Try the specified port first
     is_available, _ = check_port_availability(port)
-    
+
     if is_available:
+        # Open browser in a separate thread
+        url = f"http://127.0.0.1:{port}"
+        browser_thread = threading.Thread(target=open_browser, args=(url,), daemon=True)
+        browser_thread.start()
         app.run(host="0.0.0.0", port=port)
     else:
         # Find next available port starting from the default
@@ -139,6 +154,10 @@ if __name__ == "__main__":
             is_available, _ = check_port_availability(attempt_port)
             if is_available:
                 print(f"Starting server on port {attempt_port}")
+                # Open browser in a separate thread with the actual port
+                url = f"http://127.0.0.1:{attempt_port}"
+                browser_thread = threading.Thread(target=open_browser, args=(url,), daemon=True)
+                browser_thread.start()
                 app.run(host="0.0.0.0", port=attempt_port)
                 break
         else:

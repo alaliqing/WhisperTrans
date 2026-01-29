@@ -23,27 +23,42 @@ a = Analysis(
         (os.path.join(project_root, 'static'), 'static'),
         # Include .env.example as template for configuration
         (os.path.join(project_root, '.env.example'), '.'),
+        # Include whisper_trans.py module
+        (os.path.join(project_root, 'whisper_trans.py'), '.'),
     ],
     hiddenimports=[
         # Flask hidden imports
         'werkzeug',
         'werkzeug.exceptions',
+        'werkzeug.security',
         'jinja2',
         'jinja2.ext',
         # Whisper/PyTorch hidden imports
         'whisper',
         'whisper.transcoder',
+        'whisper.audio',
+        'whisper.tokenizer',
         'torch',
         'torch.nn',
         'torch.nn.functional',
+        'torch.nn.quantized',
+        'torch.quantization',
         'numpy',
         'numpy.core._multiarray_umath',
         'frozenlist',
         # Additional PyTorch modules
         'torch._C',
+        'torch.cuda',
+        'torch.cuda.amps',
         # Audio processing
         'ffmpeg',
         'ffmpeg.python',
+        # Standard library modules
+        'urllib3',
+        'certifi',
+        'charset_normalizer',
+        'idna',
+        'requests',
     ],
     hookspath=[],
     hooksconfig={},
