@@ -6,6 +6,7 @@ from __future__ import annotations
 import os
 import shutil
 import tempfile
+import uuid
 from typing import Dict
 
 from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, url_for
@@ -30,6 +31,8 @@ except ValueError:
 app.config["MAX_CONTENT_LENGTH"] = max_upload_mb_int * 1024 * 1024
 
 _model_cache: Dict[str, object] = {}
+# Server-side cache for transcription results
+_transcription_cache: Dict[str, str] = {}
 
 
 def get_model(model_size: str):
@@ -44,12 +47,13 @@ def get_model(model_size: str):
 def index():
     transcription_text = None
     error = None
-    
-    # Retrieve flashed transcription result from previous POST
+
+    # Retrieve flashed transcription ID from previous POST
     for message in get_flashed_messages(with_categories=True):
         category, message_text = message
         if category == "transcription":
-            transcription_text = message_text
+            # Look up transcription from server-side cache
+            transcription_text = _transcription_cache.get(message_text)
         elif category == "error":
             error = message_text
     if request.method == "POST":
@@ -85,7 +89,10 @@ def index():
             model = get_model(selected_model)
             result = transcribe_audio(model, file_path, language=language.strip() or None)
             transcription_text = build_transcription_output(result, selected_format)
-            flash(transcription_text, "transcription")
+            # Generate a small ID and store the transcription server-side instead of in session
+            transcription_id = str(uuid.uuid4())
+            _transcription_cache[transcription_id] = transcription_text
+            flash(transcription_id, "transcription")
             return redirect(url_for("index"))
         except Exception as exc:  # pragma: no cover - surfacing to UI
             error = str(exc)
