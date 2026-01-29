@@ -64,11 +64,22 @@ else
     echo "[OK] ffmpeg is installed"
 fi
 
-# Create virtual environment if it doesn't exist
+# Check if uv is installed
+if ! command -v uv &> /dev/null; then
+    echo ""
+    echo "[INFO] uv is not installed. Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.cargo/bin:$PATH"
+    echo "[OK] uv installed successfully"
+else
+    echo "[OK] uv is installed"
+fi
+
+# Create virtual environment using uv if it doesn't exist
 if [[ ! -d ".venv" ]]; then
     echo ""
-    echo "[INFO] Creating virtual environment..."
-    python3 -m venv .venv
+    echo "[INFO] Creating virtual environment with uv..."
+    uv venv .venv
     echo "[OK] Virtual environment created"
 else
     echo "[OK] Virtual environment already exists"
@@ -79,15 +90,10 @@ echo ""
 echo "[INFO] Activating virtual environment..."
 source .venv/bin/activate
 
-# Upgrade pip
+# Install dependencies using uv
 echo ""
-echo "[INFO] Upgrading pip..."
-pip3 install --upgrade pip --quiet
-
-# Install dependencies
-echo ""
-echo "[INFO] Installing dependencies..."
-pip3 install -r requirements.txt
+echo "[INFO] Installing dependencies with uv..."
+uv pip install -r requirements.txt
 
 # Check for Mac M1 optimized torch installation
 echo ""

@@ -10,6 +10,7 @@ Simple audio transcription tool for Mac (M1+). Convert any audio file to text us
 - 100+ languages supported 🌍
 - Privacy first - runs locally on your Mac 🔒
 - Optimized for Apple Silicon GPU acceleration ⚡
+- Fast installation with uv package manager 🚀
 
 ## Pre-Setup Checklist 🔍
 
@@ -41,6 +42,11 @@ Before running `./setup.sh`, ensure you have the following installed on your Mac
   ```bash
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   ```
+
+**uv will be installed automatically:**
+- uv is a fast Python package manager
+- The setup script will install it for you
+- No need to install manually
 
 **Terminal Access:**
 - Press `Cmd + Space`, type "Terminal", and press Enter
@@ -74,7 +80,7 @@ If all checks pass, you're ready to run `./setup.sh`!
 ./setup.sh
 ```
 
-This automatically checks dependencies, installs ffmpeg, creates virtual environment, and downloads packages.
+This automatically checks dependencies, installs ffmpeg, installs uv (fast package manager), creates virtual environment, and downloads packages.
 
 ### 2. Run the App 🚀
 
@@ -135,6 +141,7 @@ MAX_UPLOAD_SIZE=200
 
 - "Python 3.9+ required": Install Python from https://www.python.org/downloads/ or via Homebrew: `brew install python@3.11`
 - "ffmpeg not installed": The setup script will install it automatically via Homebrew
+- "uv not installed": The setup script will install uv automatically for you
 - "Virtual environment already exists": Delete and reinstall: `rm -rf .venv && ./setup.sh`
 
 **Transcription Issues**
