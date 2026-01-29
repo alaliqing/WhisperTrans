@@ -59,15 +59,21 @@ a = Analysis(
         'charset_normalizer',
         'idna',
         'requests',
+        # Standard library (needed by some dependencies)
+        'unittest',
+        'test',
+        'queue',
+        'concurrent.futures',
+        'multiprocessing',
     ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[
-        # Exclude test modules and unused packages to reduce size
-        'pytest', 'unittest', 'test', 'tests',
-        'tkinter', 'matplotlib', 'IPython',
-        'PIL',
+        # Exclude unused packages to reduce size
+        # Note: Don't exclude unittest/test modules as torch/whisper may need them
+        'tkinter', 'matplotlib', 'IPython', 'PIL',
+        'PyQt5', 'PySide2', 'pyside2',
     ],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
@@ -89,7 +95,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,  # Use UPX compression to reduce size by ~30-40%
-    console=False,  # Hide console window for GUI app
+    console=True,  # Hide console window for GUI app
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
