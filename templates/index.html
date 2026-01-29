@@ -4,14 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Whisper Transcriber</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" sizes="any" />
+    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml" />
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   </head>
   <body>
     <main class="container">
       <header class="header">
         <div class="logo-section">
+          <svg class="header-logo" width="36" height="36" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <rect width="64" height="64" rx="14" fill="#4f46e5"/>
+            <g fill="none" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 24 L24 40 L36 28 L44 36 L50 18"/>
+            </g>
+            <circle cx="54" cy="44" r="2.5" fill="rgb(255 180 80)" opacity="0.9"/>
+            <circle cx="12" cy="46" r="2" fill="rgb(255 180 80)" opacity="0.7"/>
+            <circle cx="36" cy="14" r="1.8" fill="rgb(255 180 80)" opacity="0.5"/>
+          </svg>
           <h1>Whisper Transcriber</h1>
-          <p>Upload an audio file, pick a model, and get instant text output in your preferred format.</p>
         </div>
       </header>
 
