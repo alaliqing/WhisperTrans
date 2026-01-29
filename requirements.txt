@@ -1,2 +1,5 @@
+# Web framework for the browser interface
 flask>=3.0.0
+
+# OpenAI's Whisper speech recognition model (includes PyTorch)
 openai-whisper>=20231117
