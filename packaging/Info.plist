@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App Display Name -->
+    <key>CFBundleDisplayName</key>
+    <string>WhisperTrans</string>
+
+    <!-- Executable Name -->
+    <key>CFBundleExecutable</key>
+    <string>WhisperTrans</string>
+
+    <!-- Icon File -->
+    <key>CFBundleIconFile</key>
+    <string>icon.icns</string>
+
+    <!-- Bundle Identifier (Reverse DNS notation) -->
+    <key>CFBundleIdentifier</key>
+    <string>com.alaliqing.whispertrans</string>
+
+    <!-- Info.plist Version -->
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+
+    <!-- Bundle Name -->
+    <key>CFBundleName</key>
+    <string>WhisperTrans</string>
+
+    <!-- Package Type (Application) -->
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <!-- Short Version String (User-visible) -->
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+
+    <!-- Bundle Version (Internal build number) -->
+    <key>CFBundleVersion</key>
+    <string>1</string>
+
+    <!-- Minimum macOS Version -->
+    <key>LSMinimumSystemVersion</key>
+    <string>11.0</string>
+
+    <!-- High Resolution Capable (Retina display support) -->
+    <key>NSHighResolutionCapable</key>
+    <true/>
+
+    <!-- Not a background-only app -->
+    <key>LSUIElement</key>
+    <false/>
+
+    <!-- Supports automatic termination -->
+    <key>NSSupportsAutomaticTermination</key>
+    <true/>
+
+    <!-- Supports sudden termination -->
+    <key>NSSupportsSuddenTermination</key>
+    <true/>
+
+    <!-- Don't require Aqua system appearance -->
+    <key>NSRequiresAquaSystemAppearance</key>
+    <false/>
+
+    <!-- Document Types (Supported audio files) -->
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeExtensions</key>
+            <array>
+                <string>mp3</string>
+                <string>wav</string>
+                <string>m4a</string>
+                <string>flac</string>
+                <string>ogg</string>
+                <string>mp4</string>
+                <string>wav</string>
+                <string>wave</string>
+                <string>aac</string>
+            </array>
+            <key>CFBundleTypeName</key>
+            <string>Audio File</string>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
+            <key>LSHandlerRank</key>
+            <string>Alternate</string>
+        </dict>
+    </array>
+
+    <!-- Allow network access (for downloading models) -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+</dict>
+</plist>

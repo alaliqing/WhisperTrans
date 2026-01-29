@@ -1,0 +1,119 @@
+name: Build and Release macOS App
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  build:
+    name: Build macOS ${{ matrix.arch }}
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [arm64, x86_64]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install system dependencies
+        run: |
+          echo "Installing ffmpeg and create-dmg..."
+          brew install ffmpeg create-dmg
+
+      - name: Install Python dependencies
+        run: |
+          echo "Installing PyInstaller and app dependencies..."
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt
+          pip install -r packaging/requirements-app.txt
+
+      - name: Detect architecture
+        id: arch
+        run: |
+          if [ "${{ matrix.arch }}" == "arm64" ]; then
+            echo "ARCH=arm64" >> $GITHUB_OUTPUT
+            echo "Building for Apple Silicon (ARM64)"
+          else
+            echo "ARCH=x86_64" >> $GITHUB_OUTPUT
+            echo "Building for Intel (x86_64)"
+          fi
+
+      - name: Build app bundle
+        run: |
+          echo "Building WhisperTrans.app..."
+          python packaging/build.py
+
+      - name: Create DMG
+        run: |
+          echo "Creating DMG installer..."
+          bash packaging/build_dmg.sh \
+            "dist/WhisperTrans.app" \
+            "dist/WhisperTrans-${{ github.ref_name }}-${{ steps.arch.outputs.ARCH }}.dmg"
+
+      - name: Display build artifacts
+        run: |
+          echo "Build artifacts:"
+          ls -lh dist/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WhisperTrans-macos-${{ steps.arch.outputs.ARCH }}
+          path: dist/WhisperTrans-*.dmg
+          retention-days: 7
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/WhisperTrans-${{ github.ref_name }}-arm64.dmg
+            dist/WhisperTrans-${{ github.ref_name }}-x86_64.dmg
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ## WhisperTrans ${{ github.ref_name }}
+
+            ### Installation
+
+            **Option 1: Download DMG (Recommended)**
+            - Download the appropriate DMG for your Mac:
+              - Apple Silicon (M1/M2/M3): `WhisperTrans-${{ github.ref_name }}-arm64.dmg`
+              - Intel Macs: `WhisperTrans-${{ github.ref_name }}-x86_64.dmg`
+            - Open the DMG and drag WhisperTrans to Applications
+            - Launch from Applications folder
+
+            **Option 2: Homebrew Cask**
+            ```bash
+            brew install --cask whisper-trans
+            ```
+
+            ### What's New
+
+            See the commit history for details.
+
+            ### System Requirements
+
+            - macOS 11.0+ (Big Sur or later)
+            - Apple Silicon (M1/M2/M3) or Intel Mac
+            - 4GB RAM minimum (8GB+ recommended)
+
+            ### Note
+
+            On first launch, WhisperTrans will download the AI model (75MB - 3GB depending on model size). This is a one-time download.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

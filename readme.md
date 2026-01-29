@@ -4,14 +4,14 @@ Simple audio transcription tool for Mac (M1+ and Intel Macs). Convert any audio 
 
 ## Features
 
-- Easy setup with automated installation ⚡
+- One-click installation with DMG or Homebrew ⚡
 - Web browser interface and CLI tool 🌐
 - Multiple output formats (TXT, SRT, VTT) 📝
 - 100+ languages supported 🌍
 - Privacy first - runs locally on your Mac 🔒
 - Works on Apple Silicon and Intel Macs 💻
 - GPU acceleration on Apple Silicon, CPU on Intel Macs
-- Fast installation with uv package manager
+- No Python setup required for DMG/Homebrew installation
 
 ## Prerequisites 📦
 
@@ -29,11 +29,38 @@ Simple audio transcription tool for Mac (M1+ and Intel Macs). Convert any audio 
 
 After installation, restart your terminal.
 
-## Getting Started 🚀
+## Installation 📥
 
-**Option 1: Git Clone (Recommended)**
+### Option 1: Download DMG (Recommended for Most Users) 🖥️
 
-First, install git if needed:
+The easiest way to install WhisperTrans on your Mac:
+
+1. **Download the latest DMG** from [Releases](https://github.com/alaliqing/WhisperTrans/releases)
+   - Apple Silicon (M1/M2/M3): `WhisperTrans-*.arm64.dmg`
+   - Intel Macs: `WhisperTrans-*.x86_64.dmg`
+2. **Open the DMG** and drag WhisperTrans to Applications
+3. **Launch** from Applications folder
+
+That's it! No Python setup required.
+
+### Option 2: Homebrew Cask 🍺
+
+If you have Homebrew installed, you can install WhisperTrans with one command:
+
+```bash
+brew install --cask whisper-trans
+```
+
+Then launch WhisperTrans from your Applications folder or run:
+```bash
+open -a WhisperTrans
+```
+
+### Option 3: Git Clone (For Developers) 💻
+
+Advanced users who want to modify the code:
+
+**First, install git if needed:**
 
 ```bash
 # Check if git is installed
@@ -43,22 +70,18 @@ git --version
 brew install git
 ```
 
-Then clone the repository:
+**Then clone the repository:**
 
 ```bash
 git clone https://github.com/alaliqing/WhisperTrans.git
 cd WhisperTrans
 ```
 
-**Option 2: Download ZIP**
+### Running from Source Setup 🔧
 
-If you don't use git:
+This section only applies if you installed via Git Clone or ZIP. DMG and Homebrew users can skip this.
 
-1. Click "Code" → "Download ZIP"
-2. Extract to ZIP file
-3. Open terminal in the extracted folder
-
-### 1. Setup (One-time)
+#### 1. Setup (One-time)
 
 ```bash
 ./setup.sh
@@ -66,7 +89,7 @@ If you don't use git:
 
 This automatically checks dependencies, installs ffmpeg and uv, creates virtual environment, and downloads packages.
 
-### 2. Run App
+#### 2. Run App
 
 **Option 1: Global Alias (Recommended)**
 
@@ -96,7 +119,7 @@ Interactive command-line interface:
 
 Open the displayed URL in your browser (usually http://localhost:5000, terminal shows actual port if 5000 is taken).
 
-### 3. Transcribe
+#### 3. Transcribe
 
 **Web:** Drag & drop audio file, select model and format, click "Transcribe"
 

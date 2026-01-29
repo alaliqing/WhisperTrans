@@ -1,0 +1,10 @@
+# Core dependencies for WhisperTrans app
+flask>=3.0.0
+openai-whisper>=20231117
+
+# Build dependencies
+pyinstaller>=6.0.0
+
+# Optional: For building wheels
+wheel
+setuptools

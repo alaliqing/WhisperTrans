@@ -21,3 +21,9 @@ venv/
 *.wav
 uploads/
 .claude/
+
+# Build artifacts
+build/
+dist/
+packaging/app-icon/icon.iconset/
+packaging/app-icon/icon.icns
