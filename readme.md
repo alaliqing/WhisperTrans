@@ -1,6 +1,6 @@
 # WhisperTrans
 
-Simple audio transcription tool for Mac (M1+). Convert any audio file to text using OpenAI's Whisper AI model.
+Simple audio transcription tool for Mac (M1+ and Intel Macs). Convert any audio file to text using OpenAI's Whisper AI model.
 
 ## Features
 
@@ -9,7 +9,8 @@ Simple audio transcription tool for Mac (M1+). Convert any audio file to text us
 - Multiple output formats (TXT, SRT, VTT)
 - 100+ languages supported
 - Privacy first - runs locally on your Mac
-- Optimized for Apple Silicon GPU acceleration
+- Works on Apple Silicon and Intel Macs
+- GPU acceleration on Apple Silicon, CPU on Intel Macs
 - Fast installation with uv package manager
 
 ## Pre-Setup Checklist
@@ -17,7 +18,8 @@ Simple audio transcription tool for Mac (M1+). Convert any audio file to text us
 Before running `./setup.sh`, ensure you have:
 
 **System Requirements:**
-- Apple Silicon Mac (M1, M2, M3, or newer) - Check with `uname -m` (should return `arm64`)
+- Apple Silicon Mac (M1, M2, M3, or newer) OR Intel Mac (2010-2020)
+  - Check with `uname -m` (returns `arm64` for Apple Silicon, `x86_64` for Intel)
 - macOS 11.0 or later - Check with `sw_vers`
 
 **Required Tools:**
@@ -37,6 +39,22 @@ uname -m             # chip type (arm64)
 python3 --version    # Python 3.9+
 brew --version       # Homebrew
 ```
+
+## Performance by Mac Type
+
+**Apple Silicon (M1, M2, M3, etc.):**
+- GPU acceleration available (10-20x faster than Intel)
+- Recommended models: base, small, medium, large
+- Typical transcription time: 2-10 minutes (base model)
+- All features fully supported
+
+**Intel Macs (2010-2020 models):**
+- CPU-only processing (no GPU acceleration)
+- Recommended models: tiny, base only
+- Typical transcription time: 20-60 minutes (base model)
+- Medium/Large models: Not recommended (may take 2+ hours)
+
+**Note:** Intel Macs will work but with significantly degraded performance. For best experience, use Apple Silicon Macs or start with smaller models (tiny/base).
 
 ## Quick Start
 
@@ -84,13 +102,13 @@ Follow the interactive prompts.
 
 ## AI Models
 
-| Model   | Speed       | Accuracy | Size   | Best For               |
-|---------|-------------|----------|---------|------------------------|
-| tiny    | Fastest     | 75%      | ~75MB   | Quick drafts           |
-| base    | Fast        | 80%      | ~150MB  | General use (default)  |
-| small   | Moderate    | 85%      | ~470MB  | Better accuracy        |
-| medium  | Slower      | 90%      | ~1.5GB  | Professional           |
-| large   | Slowest     | 95%      | ~3GB    | Maximum accuracy       |
+| Model   | Speed       | Accuracy | Size   | Best For               | Intel Mac               |
+|---------|-------------|----------|---------|------------------------|------------------------|
+| tiny    | Fastest     | 75%      | ~75MB   | Quick drafts           | Recommended             |
+| base    | Fast        | 80%      | ~150MB  | General use (default)  | Recommended             |
+| small   | Moderate    | 85%      | ~470MB  | Better accuracy        | Not recommended         |
+| medium  | Slower      | 90%      | ~1.5GB  | Professional           | Not recommended (2+ hours) |
+| large   | Slowest     | 95%      | ~3GB    | Maximum accuracy       | Not recommended (3+ hours) |
 
 ## Output Formats
 
@@ -100,10 +118,10 @@ Follow the interactive prompts.
 
 ## Requirements
 
-- macOS 11+ with Apple Silicon (M1, M2, M3, etc.)
+- macOS 11+ (Apple Silicon M1/M2/M3 OR Intel Macs 2010-2020)
 - Python 3.9+
 - 100MB storage + up to 3GB for AI models
-- 4GB RAM minimum (8GB+ for larger models)
+- 4GB RAM minimum (8GB+ recommended for Intel Macs, 16GB+ for Apple Silicon with large models)
 
 ## Configuration
 
@@ -134,8 +152,14 @@ MAX_UPLOAD_SIZE=200
 **Transcription Issues**
 
 - "Download stalls": Check internet connection, first download is 75MB-3GB depending on model
-- "Slow transcription": First run is slower (model download), use smaller model (tiny/base), ensure on M1 Mac
+- "Slow transcription": First run is slower (model download), use smaller model (tiny/base)
 - "Poor accuracy": Specify language manually, use larger model (small/medium/large), ensure good audio quality
+
+**Intel Mac Specific Issues**
+
+- "Transcription is very slow (30+ minutes)": This is expected on Intel Macs due to CPU-only processing. Try using 'tiny' model for faster results.
+- "Memory errors on medium/large models": Intel Macs typically have less memory. Stick to 'tiny' or 'base' models.
+- "Freezing during transcription": Reduce file size or use smaller model (tiny). Close other applications to free up memory.
 
 **Web UI Issues**
 

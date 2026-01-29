@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# WhisperTrans Setup Script for macOS (M1+)
+# WhisperTrans Setup Script for macOS (M1+ and Intel Macs)
 # This script automates installation process for non-developers
 
 set -e
 
-echo "WhisperTrans Setup Script for macOS (M1+)"
+echo "WhisperTrans Setup Script for macOS (M1+ and Intel Macs)"
 echo "================================================"
 echo ""
 
@@ -16,16 +16,33 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
     exit 1
 fi
 
-# Check for Apple Silicon
-if [[ $(uname -m) != 'arm64' ]]; then
-    echo "[WARNING] This project is optimized for Apple Silicon (M1+)"
-    echo "   Running on Intel Mac may require additional setup"
-    read -p "   Continue anyway? (y/n): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        exit 1
-    fi
+# Detect Mac architecture
+ARCH=$(uname -m)
+if [[ "$ARCH" == 'arm64' ]]; then
+    MAC_TYPE="Apple Silicon"
+    GPU_ACCEL="Yes (Metal Performance Shaders)"
+    RECOMMENDED_MODELS="base, small, medium, large"
+    DEFAULT_MODEL="base"
+else
+    MAC_TYPE="Intel"
+    GPU_ACCEL="No (CPU only)"
+    RECOMMENDED_MODELS="tiny, base"
+    DEFAULT_MODEL="tiny"
+    
+    echo ""
+    echo "=========================================="
+    echo "INFO: Intel Mac Detected"
+    echo "=========================================="
+    echo "This project supports Intel Macs with some limitations:"
+    echo "  - No GPU acceleration (CPU-only processing)"
+    echo "  - Transcription will be significantly slower"
+    echo "  - Recommended models: tiny, base only"
+    echo "  - Estimated time: 20-60 min for base model"
+    echo "=========================================="
+    echo ""
 fi
+
+echo "[OK] Detected $MAC_TYPE ($ARCH)"
 
 # Check if Python 3 is installed
 if ! command -v python3 &> /dev/null; then
@@ -95,10 +112,11 @@ echo ""
 echo "[INFO] Installing dependencies with uv..."
 uv pip install -r requirements.txt
 
-# Check for Mac M1 optimized torch installation
+# Check for GPU acceleration based on architecture
 echo ""
-echo "[INFO] Checking for Apple Silicon optimizations..."
-python3 << 'EOF'
+echo "[INFO] Checking for hardware acceleration..."
+if [[ "$ARCH" == 'arm64' ]]; then
+    python3 << 'EOF'
 import torch
 if hasattr(torch.backends, 'mps'):
     if torch.backends.mps.is_available():
@@ -108,6 +126,9 @@ if hasattr(torch.backends, 'mps'):
 else:
     print("[INFO] Running on CPU (MPS not available)")
 EOF
+else
+    echo "[INFO] Intel Mac: Using CPU for transcription"
+fi
 
 # Create .env file if it doesn't exist
 if [[ ! -f ".env" ]]; then
@@ -118,6 +139,11 @@ if [[ ! -f ".env" ]]; then
 FLASK_SECRET_KEY=$(openssl rand -hex 32)
 PORT=5000
 MAX_UPLOAD_SIZE=200
+
+# System configuration
+MAC_TYPE=$MAC_TYPE
+ARCH=$ARCH
+DEFAULT_MODEL=$DEFAULT_MODEL
 EOL
     echo "[OK] .env file created"
 else
@@ -180,6 +206,15 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "[NOTE] If you move the WhisperTrans folder, update the alias in $CONFIG_FILE"
 fi
 
+echo ""
+echo "System Summary:"
+echo "  Architecture:  $MAC_TYPE ($ARCH)"
+echo "  GPU Acceleration: $GPU_ACCEL"
+echo "  Recommended Models: $RECOMMENDED_MODELS"
+echo ""
+if [[ "$ARCH" != 'arm64' ]]; then
+    echo "[TIP] For Intel Macs, start with 'tiny' or 'base' models for best performance."
+fi
 echo ""
 echo "First transcription may take a few minutes to download the model."
 echo "================================================"

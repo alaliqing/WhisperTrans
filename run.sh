@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# WhisperTrans Web App Launcher for macOS (M1+)
+# WhisperTrans Web App Launcher for macOS (M1+ and Intel Macs)
 # This script starts the Flask web application
 
 set -e
 
-# Get the directory where this script is located
+# Get directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Change to script directory
@@ -38,6 +38,14 @@ fi
 
 # Load environment variables
 export $(cat .env | grep -v '^#' | xargs)
+
+# Show architecture info if available
+if [[ -n "$MAC_TYPE" ]]; then
+    echo "[INFO] System: $MAC_TYPE ($ARCH)"
+    if [[ "$ARCH" != 'arm64' ]]; then
+        echo "[TIP] For Intel Macs, consider using 'tiny' or 'base' models for better performance."
+    fi
+fi
 
 # Start the Flask app
 echo "[OK] Starting Flask server on port ${PORT:-5000}"
