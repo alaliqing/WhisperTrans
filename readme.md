@@ -4,85 +4,51 @@ Simple audio transcription tool for Mac (M1+). Convert any audio file to text us
 
 ## Features
 
-- Easy setup with automated installation 🎙️
-- Web browser interface and CLI tool 🌐
-- Multiple output formats (TXT, SRT, VTT) 📄
-- 100+ languages supported 🌍
-- Privacy first - runs locally on your Mac 🔒
-- Optimized for Apple Silicon GPU acceleration ⚡
-- Fast installation with uv package manager 🚀
+- Easy setup with automated installation
+- Web browser interface and CLI tool
+- Multiple output formats (TXT, SRT, VTT)
+- 100+ languages supported
+- Privacy first - runs locally on your Mac
+- Optimized for Apple Silicon GPU acceleration
+- Fast installation with uv package manager
 
-## Pre-Setup Checklist 🔍
+## Pre-Setup Checklist
 
-Before running `./setup.sh`, ensure you have the following installed on your Mac:
+Before running `./setup.sh`, ensure you have:
 
-### 1. Check Your System
+**System Requirements:**
+- Apple Silicon Mac (M1, M2, M3, or newer) - Check with `uname -m` (should return `arm64`)
+- macOS 11.0 or later - Check with `sw_vers`
 
-**Verify you have an Apple Silicon Mac (M1, M2, M3, etc.):**
-- Click Apple menu → About This Mac
-- Look for "Apple M1", "M2", "M3", etc. in the chip name
-- Run: `uname -m` (should return `arm64`)
+**Required Tools:**
+- Python 3.9+ - Check with `python3 --version`
+- Homebrew - Check with `brew --version`
+  - If not installed: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
 
-**Verify macOS version:**
-- Click Apple menu → About This Mac
-- Must be macOS Big Sur (11.0) or later
-- Run: `sw_vers`
+**What's Installed Automatically:**
+- uv (fast Python package manager)
+- ffmpeg (audio processing tool)
+- All Python dependencies
 
-### 2. Install Required Tools
-
-**Python 3.9+:**
-- Check version: `python3 --version`
-- If not installed:
-  - Download from https://www.python.org/downloads/
-  - Or install via Homebrew: `brew install python@3.11`
-
-**Homebrew (package manager):**
-- Check if installed: `brew --version`
-- If not installed:
-  ```bash
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  ```
-
-**uv will be installed automatically:**
-- uv is a fast Python package manager
-- The setup script will install it for you
-- No need to install manually
-
-**Terminal Access:**
-- Press `Cmd + Space`, type "Terminal", and press Enter
-- You'll use Terminal to run setup scripts
-
-### 3. Verify Everything
-
-Run these commands to verify everything is ready:
-
+Verify everything is ready:
 ```bash
-# Check macOS version
-sw_vers
-
-# Check chip (should be arm64 for M1+)
-uname -m
-
-# Check Python version (must be 3.9+)
-python3 --version
-
-# Check Homebrew
-brew --version
+sw_vers              # macOS version
+uname -m             # chip type (arm64)
+python3 --version    # Python 3.9+
+brew --version       # Homebrew
 ```
-
-If all checks pass, you're ready to run `./setup.sh`!
 
 ## Quick Start
 
-### 1. Setup (One-time) 📦
+### 1. Setup (One-time)
 
 ```bash
 ./setup.sh
 ```
 
-This automatically checks dependencies, installs ffmpeg, installs uv (fast package manager), creates virtual environment, and downloads packages.
+This automatically checks dependencies, installs ffmpeg and uv, creates virtual environment, and downloads packages.
 
-### 2. Run the App 🚀
+### 2. Run the App
 
 **Web Interface:**
 ```bash
@@ -96,7 +62,7 @@ Open http://localhost:5000 in your browser.
 ```
 Follow the interactive prompts.
 
-### 3. Transcribe ✍️
+### 3. Transcribe
 
 **Web:** Drag & drop audio file, select model and format, click "Transcribe"
 
@@ -135,7 +101,7 @@ PORT=5000
 MAX_UPLOAD_SIZE=200
 ```
 
-## Troubleshooting 🔧
+## Troubleshooting
 
 **Setup Issues**
 
@@ -197,7 +163,7 @@ run.sh            # Web app launcher
 run_cli.sh        # CLI tool
 ```
 
-## Tips 💡
+## Tips
 
 - First transcription takes a few minutes to download the model
 - Use "base" model for best balance of speed and accuracy
