@@ -17,17 +17,22 @@ Simple audio transcription tool for Mac (M1+ and Intel Macs). Convert any audio 
 
 **Option 1: Git Clone (Recommended)**
 
-Clone the repository using git:
+First, install git if needed:
+
+```bash
+# Check if git is installed
+git --version
+
+# If not installed, install via Homebrew
+brew install git
+```
+
+Then clone the repository:
 
 ```bash
 git clone https://github.com/your-username/WhisperTrans.git
 cd WhisperTrans
 ```
-
-Benefits of git clone:
-- Easy updates with `git pull`
-- Version control included
-- Track changes and contributions
 
 **Option 2: Download ZIP**
 
@@ -35,53 +40,8 @@ If you don't use git:
 
 1. Go to: https://github.com/your-username/WhisperTrans
 2. Click "Code" → "Download ZIP"
-3. Extract the ZIP file
+3. Extract to ZIP file
 4. Open terminal in the extracted folder
-
-## Pre-Setup Checklist
-
-Before running `./setup.sh`, ensure you have:
-
-**System Requirements:**
-- Apple Silicon Mac (M1, M2, M3, or newer) OR Intel Mac (2010-2020)
-  - Check with `uname -m` (returns `arm64` for Apple Silicon, `x86_64` for Intel)
-- macOS 11.0 or later - Check with `sw_vers`
-
-**Required Tools:**
-- Python 3.9+ - Check with `python3 --version`
-- Homebrew - Check with `brew --version`
-  - If not installed: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
-
-**What's Installed Automatically:**
-- uv (fast Python package manager)
-- ffmpeg (audio processing tool)
-- All Python dependencies
-
-Verify everything is ready:
-```bash
-sw_vers              # macOS version
-uname -m             # chip type (arm64)
-python3 --version    # Python 3.9+
-brew --version       # Homebrew
-```
-
-## Performance by Mac Type
-
-**Apple Silicon (M1, M2, M3, etc.):**
-- GPU acceleration available (10-20x faster than Intel)
-- Recommended models: base, small, medium, large
-- Typical transcription time: 2-10 minutes (base model)
-- All features fully supported
-
-**Intel Macs (2010-2020 models):**
-- CPU-only processing (no GPU acceleration)
-- Recommended models: tiny, base only
-- Typical transcription time: 20-60 minutes (base model)
-- Medium/Large models: Not recommended (may take 2+ hours)
-
-**Note:** Intel Macs will work but with significantly degraded performance. For best experience, use Apple Silicon Macs or start with smaller models (tiny/base).
-
-## Quick Start
 
 ### 1. Setup (One-time)
 
@@ -91,7 +51,7 @@ brew --version       # Homebrew
 
 This automatically checks dependencies, installs ffmpeg and uv, creates virtual environment, and downloads packages.
 
-### 2. Run the App
+### 2. Run App
 
 **Web Interface:**
 ```bash
@@ -124,6 +84,22 @@ Follow the interactive prompts.
 **Web:** Drag & drop audio file, select model and format, click "Transcribe"
 
 **CLI:** The script guides you through file selection, model choice, format, and language options.
+
+## Performance by Mac Type
+
+**Apple Silicon (M1, M2, M3, etc.):**
+- GPU acceleration available (10-20x faster than Intel)
+- Recommended models: base, small, medium, large
+- Typical transcription time: 2-10 minutes (base model)
+- All features fully supported
+
+**Intel Macs (2010-2020 models):**
+- CPU-only processing (no GPU acceleration)
+- Recommended models: tiny, base only
+- Typical transcription time: 20-60 minutes (base model)
+- Medium/Large models: Not recommended (may take 2+ hours)
+
+**Note:** Intel Macs will work but with significantly degraded performance. For best experience, use Apple Silicon Macs or start with smaller models (tiny/base).
 
 ## AI Models
 
@@ -170,9 +146,9 @@ MAX_UPLOAD_SIZE=200
 **Alias Issues**
 
 - "whispertrans command not found": Restart your terminal or run `source ~/.zshrc` (or `source ~/.bash_profile`)
-- "Alias doesn't work": Check that the alias was added to your shell config file (~/.zshrc or ~/.bash_profile)
-- "Alias stopped working after moving folder": Update the alias path in your shell config file to point to the new location
-- "Need to remove alias": Edit your shell config file and remove the alias line, then run source command
+- "Alias doesn't work": Check that alias was added to your shell config file (~/.zshrc or ~/.bash_profile)
+- "Alias stopped working after moving folder": Update to alias path in your shell config file to point to new location
+- "Need to remove alias": Edit your shell config file and remove to alias line, then run source command
 
 **Transcription Issues**
 
