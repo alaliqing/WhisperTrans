@@ -20,3 +20,4 @@ venv/
 *.mp3
 *.wav
 uploads/
+.claude/
