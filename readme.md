@@ -15,18 +15,19 @@ Simple audio transcription tool for Mac (M1+ and Intel Macs). Convert any audio 
 
 ## Prerequisites 📦
 
-**If you don't have Homebrew installed**, run this all-in-one command to install it (this will also install git):
+**If you don't have Homebrew installed**, choose one of the following:
 
+**Standard installation (recommended):**
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-After installation, restart your terminal or run:
+**For users in China (faster mirror):**
 ```bash
-eval "$(/opt/homebrew/bin/brew shellenv)"  # For Apple Silicon
-# or
-eval "$(/usr/local/bin/brew shellenv)"  # For Intel Macs
+/bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"
 ```
+
+After installation, restart your terminal.
 
 ## Getting Started 🚀
 
