@@ -13,6 +13,31 @@ Simple audio transcription tool for Mac (M1+ and Intel Macs). Convert any audio 
 - GPU acceleration on Apple Silicon, CPU on Intel Macs
 - Fast installation with uv package manager
 
+## Getting Started
+
+**Option 1: Git Clone (Recommended)**
+
+Clone the repository using git:
+
+```bash
+git clone https://github.com/your-username/WhisperTrans.git
+cd WhisperTrans
+```
+
+Benefits of git clone:
+- Easy updates with `git pull`
+- Version control included
+- Track changes and contributions
+
+**Option 2: Download ZIP**
+
+If you don't use git:
+
+1. Go to: https://github.com/your-username/WhisperTrans
+2. Click "Code" → "Download ZIP"
+3. Extract the ZIP file
+4. Open terminal in the extracted folder
+
 ## Pre-Setup Checklist
 
 Before running `./setup.sh`, ensure you have:
