@@ -4,16 +4,16 @@ Simple audio transcription tool for Mac (M1+ and Intel Macs). Convert any audio 
 
 ## Features
 
-- Easy setup with automated installation
-- Web browser interface and CLI tool
-- Multiple output formats (TXT, SRT, VTT)
-- 100+ languages supported
-- Privacy first - runs locally on your Mac
-- Works on Apple Silicon and Intel Macs
+- Easy setup with automated installation ⚡
+- Web browser interface and CLI tool 🌐
+- Multiple output formats (TXT, SRT, VTT) 📝
+- 100+ languages supported 🌍
+- Privacy first - runs locally on your Mac 🔒
+- Works on Apple Silicon and Intel Macs 💻
 - GPU acceleration on Apple Silicon, CPU on Intel Macs
 - Fast installation with uv package manager
 
-## Getting Started
+## Getting Started 🚀
 
 **Option 1: Git Clone (Recommended)**
 
@@ -85,7 +85,7 @@ Follow the interactive prompts.
 
 **CLI:** The script guides you through file selection, model choice, format, and language options.
 
-## Performance by Mac Type
+## Performance by Mac Type 💻
 
 **Apple Silicon (M1, M2, M3, etc.):**
 - GPU acceleration available (10-20x faster than Intel)
@@ -136,33 +136,33 @@ MAX_UPLOAD_SIZE=200
 
 ## Troubleshooting
 
-**Setup Issues**
+**Setup Issues** 🛠️
 
 - "Python 3.9+ required": Install Python from https://www.python.org/downloads/ or via Homebrew: `brew install python@3.11`
 - "ffmpeg not installed": The setup script will install it automatically via Homebrew
 - "uv not installed": The setup script will install uv automatically for you
 - "Virtual environment already exists": Delete and reinstall: `rm -rf .venv && ./setup.sh`
 
-**Alias Issues**
+**Alias Issues** 🔧
 
 - "whispertrans command not found": Restart your terminal or run `source ~/.zshrc` (or `source ~/.bash_profile`)
 - "Alias doesn't work": Check that alias was added to your shell config file (~/.zshrc or ~/.bash_profile)
 - "Alias stopped working after moving folder": Update to alias path in your shell config file to point to new location
 - "Need to remove alias": Edit your shell config file and remove to alias line, then run source command
 
-**Transcription Issues**
+**Transcription Issues** ⚠️
 
 - "Download stalls": Check internet connection, first download is 75MB-3GB depending on model
 - "Slow transcription": First run is slower (model download), use smaller model (tiny/base)
 - "Poor accuracy": Specify language manually, use larger model (small/medium/large), ensure good audio quality
 
-**Intel Mac Specific Issues**
+**Intel Mac Specific Issues** 💻
 
 - "Transcription is very slow (30+ minutes)": This is expected on Intel Macs due to CPU-only processing. Try using 'tiny' model for faster results.
 - "Memory errors on medium/large models": Intel Macs typically have less memory. Stick to 'tiny' or 'base' models.
 - "Freezing during transcription": Reduce file size or use smaller model (tiny). Close other applications to free up memory.
 
-**Web UI Issues**
+**Web UI Issues** 🌐
 
 - "Cannot access localhost:5000": Ensure server is running, check if port 5000 is in use, try different port in `.env`
 - "File upload failed": Check file size (max 200MB), ensure supported format (MP3, WAV, M4A, FLAC, OGG)
@@ -209,7 +209,7 @@ run.sh            # Web app launcher
 run_cli.sh        # CLI tool
 ```
 
-## Tips
+## Tips 💡
 
 - First transcription takes a few minutes to download the model
 - Use "base" model for best balance of speed and accuracy
