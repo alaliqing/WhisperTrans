@@ -4,16 +4,16 @@ Simple audio transcription tool for Mac (M1+). Convert any audio file to text us
 
 ## Features
 
-- Easy setup with automated installation
-- Web browser interface and CLI tool
-- Multiple output formats (TXT, SRT, VTT)
-- 100+ languages supported
-- Privacy first - runs locally on your Mac
-- Optimized for Apple Silicon GPU acceleration
+- Easy setup with automated installation 🎙️
+- Web browser interface and CLI tool 🌐
+- Multiple output formats (TXT, SRT, VTT) 📄
+- 100+ languages supported 🌍
+- Privacy first - runs locally on your Mac 🔒
+- Optimized for Apple Silicon GPU acceleration ⚡
 
 ## Quick Start
 
-### 1. Setup (One-time)
+### 1. Setup (One-time) 📦
 
 ```bash
 ./setup.sh
@@ -21,7 +21,7 @@ Simple audio transcription tool for Mac (M1+). Convert any audio file to text us
 
 This automatically checks dependencies, installs ffmpeg, creates virtual environment, and downloads packages.
 
-### 2. Run the App
+### 2. Run the App 🚀
 
 **Web Interface:**
 ```bash
@@ -35,7 +35,7 @@ Open http://localhost:5000 in your browser.
 ```
 Follow the interactive prompts.
 
-### 3. Transcribe
+### 3. Transcribe ✍️
 
 **Web:** Drag & drop audio file, select model and format, click "Transcribe"
 
@@ -74,7 +74,7 @@ PORT=5000
 MAX_UPLOAD_SIZE=200
 ```
 
-## Troubleshooting
+## Troubleshooting 🔧
 
 **Setup Issues**
 
@@ -135,7 +135,7 @@ run.sh            # Web app launcher
 run_cli.sh        # CLI tool
 ```
 
-## Tips
+## Tips 💡
 
 - First transcription takes a few minutes to download the model
 - Use "base" model for best balance of speed and accuracy
