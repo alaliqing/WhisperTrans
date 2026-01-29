@@ -56,6 +56,20 @@ This automatically checks dependencies, installs ffmpeg and uv, creates virtual 
 ```
 Open http://localhost:5000 in your browser.
 
+**Global Alias (Recommended for repeated use):**
+
+During setup, you can choose to add a global alias. After setup, restart your terminal or run:
+
+```bash
+source ~/.zshrc  # or source ~/.bash_profile
+```
+
+Then you can start the web app from anywhere with:
+
+```bash
+whispertrans
+```
+
 **CLI Tool:**
 ```bash
 ./run_cli.sh
@@ -109,6 +123,13 @@ MAX_UPLOAD_SIZE=200
 - "ffmpeg not installed": The setup script will install it automatically via Homebrew
 - "uv not installed": The setup script will install uv automatically for you
 - "Virtual environment already exists": Delete and reinstall: `rm -rf .venv && ./setup.sh`
+
+**Alias Issues**
+
+- "whispertrans command not found": Restart your terminal or run `source ~/.zshrc` (or `source ~/.bash_profile`)
+- "Alias doesn't work": Check that the alias was added to your shell config file (~/.zshrc or ~/.bash_profile)
+- "Alias stopped working after moving folder": Update the alias path in your shell config file to point to the new location
+- "Need to remove alias": Edit your shell config file and remove the alias line, then run source command
 
 **Transcription Issues**
 

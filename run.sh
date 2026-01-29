@@ -5,14 +5,22 @@
 
 set -e
 
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Change to script directory
+cd "$SCRIPT_DIR"
+
 echo "Starting WhisperTrans Web Application..."
+echo ""
+echo "[INFO] Working directory: $SCRIPT_DIR"
 echo ""
 
 # Check if .venv exists
 if [[ ! -d ".venv" ]]; then
     echo "[ERROR] Virtual environment not found."
     echo "   Please run ./setup.sh first"
-    exit 1
+    exit1
 fi
 
 # Activate virtual environment

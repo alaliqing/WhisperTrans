@@ -133,5 +133,53 @@ echo "  1. Start the web app:    ./run.sh"
 echo "  2. Or use CLI:           ./run_cli.sh"
 echo "  3. Read README.md for more details"
 echo ""
+
+# Setup global alias for easy access
+read -p "[?] Add global alias to start web app from anywhere? (y/n): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+    RUN_SCRIPT="$SCRIPT_DIR/run.sh"
+    
+    # Detect shell
+    if [[ "$SHELL" == */zsh ]]; then
+        CONFIG_FILE="$HOME/.zshrc"
+        SHELL_NAME="zsh"
+    elif [[ "$SHELL" == */bash ]]; then
+        CONFIG_FILE="$HOME/.bash_profile"
+        SHELL_NAME="bash"
+    else
+        echo "[INFO] Unable to detect shell. Defaulting to zsh."
+        CONFIG_FILE="$HOME/.zshrc"
+        SHELL_NAME="zsh"
+    fi
+    
+    # Check if alias already exists
+    if grep -q "alias whispertrans=" "$CONFIG_FILE" 2>/dev/null; then
+        echo "[INFO] Alias 'whispertrans' already exists in $CONFIG_FILE"
+    else
+        echo ""
+        echo "[INFO] Adding alias to $CONFIG_FILE"
+        echo "" >> "$CONFIG_FILE"
+        echo "# WhisperTrans alias" >> "$CONFIG_FILE"
+        echo "alias whispertrans='$RUN_SCRIPT'" >> "$CONFIG_FILE"
+        echo "[OK] Alias 'whispertrans' added to $CONFIG_FILE"
+    fi
+    
+    echo ""
+    echo "To use the alias, restart your terminal or run:"
+    if [[ "$SHELL_NAME" == "zsh" ]]; then
+        echo "  source ~/.zshrc"
+    else
+        echo "  source ~/.bash_profile"
+    fi
+    echo ""
+    echo "After that, you can start the web app from anywhere with:"
+    echo "  whispertrans"
+    echo ""
+    echo "[NOTE] If you move the WhisperTrans folder, update the alias in $CONFIG_FILE"
+fi
+
+echo ""
 echo "First transcription may take a few minutes to download the model."
 echo "================================================"
