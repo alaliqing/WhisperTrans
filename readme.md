@@ -11,6 +11,61 @@ Simple audio transcription tool for Mac (M1+). Convert any audio file to text us
 - Privacy first - runs locally on your Mac 🔒
 - Optimized for Apple Silicon GPU acceleration ⚡
 
+## Pre-Setup Checklist 🔍
+
+Before running `./setup.sh`, ensure you have the following installed on your Mac:
+
+### 1. Check Your System
+
+**Verify you have an Apple Silicon Mac (M1, M2, M3, etc.):**
+- Click Apple menu → About This Mac
+- Look for "Apple M1", "M2", "M3", etc. in the chip name
+- Run: `uname -m` (should return `arm64`)
+
+**Verify macOS version:**
+- Click Apple menu → About This Mac
+- Must be macOS Big Sur (11.0) or later
+- Run: `sw_vers`
+
+### 2. Install Required Tools
+
+**Python 3.9+:**
+- Check version: `python3 --version`
+- If not installed:
+  - Download from https://www.python.org/downloads/
+  - Or install via Homebrew: `brew install python@3.11`
+
+**Homebrew (package manager):**
+- Check if installed: `brew --version`
+- If not installed:
+  ```bash
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  ```
+
+**Terminal Access:**
+- Press `Cmd + Space`, type "Terminal", and press Enter
+- You'll use Terminal to run setup scripts
+
+### 3. Verify Everything
+
+Run these commands to verify everything is ready:
+
+```bash
+# Check macOS version
+sw_vers
+
+# Check chip (should be arm64 for M1+)
+uname -m
+
+# Check Python version (must be 3.9+)
+python3 --version
+
+# Check Homebrew
+brew --version
+```
+
+If all checks pass, you're ready to run `./setup.sh`!
+
 ## Quick Start
 
 ### 1. Setup (One-time) 📦

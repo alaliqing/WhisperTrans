@@ -82,12 +82,12 @@ source .venv/bin/activate
 # Upgrade pip
 echo ""
 echo "[INFO] Upgrading pip..."
-pip install --upgrade pip --quiet
+pip3 install --upgrade pip --quiet
 
 # Install dependencies
 echo ""
 echo "[INFO] Installing dependencies..."
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 
 # Check for Mac M1 optimized torch installation
 echo ""
