@@ -13,6 +13,21 @@ Simple audio transcription tool for Mac (M1+ and Intel Macs). Convert any audio 
 - GPU acceleration on Apple Silicon, CPU on Intel Macs
 - Fast installation with uv package manager
 
+## Prerequisites 📦
+
+**If you don't have Homebrew installed**, run this all-in-one command to install it (this will also install git):
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+After installation, restart your terminal or run:
+```bash
+eval "$(/opt/homebrew/bin/brew shellenv)"  # For Apple Silicon
+# or
+eval "$(/usr/local/bin/brew shellenv)"  # For Intel Macs
+```
+
 ## Getting Started 🚀
 
 **Option 1: Git Clone (Recommended)**
@@ -52,31 +67,33 @@ This automatically checks dependencies, installs ffmpeg and uv, creates virtual 
 
 ### 2. Run App
 
-**Web Interface:**
-```bash
-./run.sh
-```
-Open http://localhost:5000 in your browser.
+**Option 1: Global Alias (Recommended)**
 
-**Global Alias (Recommended for repeated use):**
-
-During setup, you can choose to add a global alias. After setup, restart your terminal or run:
-
+After setup, reload your shell (or restart terminal):
 ```bash
 source ~/.zshrc  # or source ~/.bash_profile
 ```
 
-Then you can start the web app from anywhere with:
-
+Start the app from anywhere:
 ```bash
 whispertrans
 ```
 
-**CLI Tool:**
+**Option 2: Direct Launch**
+
+Run from the project directory:
+```bash
+./run.sh
+```
+
+**Option 3: CLI Tool**
+
+Interactive command-line interface:
 ```bash
 ./run_cli.sh
 ```
-Follow the interactive prompts.
+
+Open the displayed URL in your browser (usually http://localhost:5000, terminal shows actual port if 5000 is taken).
 
 ### 3. Transcribe
 
