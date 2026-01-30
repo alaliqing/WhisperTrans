@@ -176,6 +176,7 @@ def monitor_heartbeat():
 
 if __name__ == "__main__":
     import fcntl
+    import sys
     import socket
     import webbrowser
     import threading
@@ -184,8 +185,15 @@ if __name__ == "__main__":
     from urllib.error import URLError
 
     # Add app's MacOS directory to PATH for bundled binaries like ffmpeg
-    app_dir = os.path.dirname(os.path.abspath(__file__))
-    app_macos = os.path.join(app_dir, "Contents", "MacOS")
+    if getattr(sys, "frozen", False):
+        app_macos = os.path.dirname(os.path.abspath(sys.executable))
+    else:
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        app_macos = os.path.join(
+            app_dir, "dist", "WhisperTrans.app", "Contents", "MacOS"
+        )
+        if not os.path.exists(app_macos):
+            app_macos = os.path.dirname(app_dir)
     os.environ["PATH"] = app_macos + os.pathsep + os.environ.get("PATH", "")
 
     # Single-instance lock file
