@@ -3,13 +3,22 @@
 
 from __future__ import annotations
 
+import atexit
 import os
 import shutil
 import tempfile
 import uuid
-from typing import Dict
+from typing import Dict, Any
 
-from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, url_for
+from flask import (
+    Flask,
+    flash,
+    get_flashed_messages,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from werkzeug.utils import secure_filename
 
 from whisper_trans import (
@@ -30,9 +39,13 @@ except ValueError:
     max_upload_mb_int = 200
 app.config["MAX_CONTENT_LENGTH"] = max_upload_mb_int * 1024 * 1024
 
-_model_cache: Dict[str, object] = {}
+_model_cache: Dict[str, Any] = {}
 # Server-side cache for transcription results
 _transcription_cache: Dict[str, str] = {}
+
+# Heartbeat tracking for auto-shutdown
+_last_heartbeat: float = 0.0
+_shutdown_timeout: int = 60  # seconds of inactivity before shutdown
 
 
 def get_model(model_size: str):
@@ -72,11 +85,11 @@ def index():
 
     if request.method == "POST":
         upload = request.files.get("audio_file")
-        if not upload or upload.filename == "":
+        if not upload or not upload.filename:
             flash("Please choose an audio file before transcribing.", "error")
             return redirect(url_for("index"))
 
-        filename = secure_filename(upload.filename)
+        filename = secure_filename(upload.filename) if upload.filename else ""
         if not filename:
             flash("Invalid filename. Please rename your file and try again.", "error")
             return redirect(url_for("index"))
@@ -87,7 +100,9 @@ def index():
 
         try:
             model = get_model(selected_model)
-            result = transcribe_audio(model, file_path, language=language.strip() or None)
+            result = transcribe_audio(
+                model, file_path, language=language.strip() or None
+            )
             transcription_text = build_transcription_output(result, selected_format)
             # Generate a small ID and store the transcription server-side instead of in session
             transcription_id = str(uuid.uuid4())
@@ -111,42 +126,188 @@ def index():
     )
 
 
+@app.route("/heartbeat", methods=["POST"])
+def heartbeat():
+    """Receive heartbeat from frontend to keep server alive."""
+    global _last_heartbeat
+    _last_heartbeat = time.time()
+    return "OK"
+
+
+@app.route("/shutdown", methods=["POST"])
+def shutdown():
+    """Shutdown the server and exit the application."""
+    import os
+    import threading
+
+    def delayed_shutdown():
+        import time
+
+        time.sleep(1.0)
+        try:
+            os._exit(0)
+        except:
+            pass
+
+    t = threading.Thread(target=delayed_shutdown, daemon=False)
+    t.start()
+    return "Server shutting down..."
+
+
+def monitor_heartbeat():
+    """Monitor heartbeat and shutdown if inactive for too long."""
+    global _last_heartbeat
+    print("Heartbeat monitor started")
+    import sys
+
+    while True:
+        time.sleep(5)
+        if _last_heartbeat > 0:
+            elapsed = time.time() - _last_heartbeat
+            print(f"Last heartbeat: {elapsed:.1f}s ago (timeout: {_shutdown_timeout}s)")
+            sys.stdout.flush()
+            if elapsed > _shutdown_timeout:
+                print(
+                    f"\nNo heartbeat received for {_shutdown_timeout} seconds, shutting down..."
+                )
+                sys.stdout.flush()
+                os._exit(0)
+
+
 if __name__ == "__main__":
+    import fcntl
     import socket
     import webbrowser
     import threading
     import time
+    import urllib.request
+    from urllib.error import URLError
 
-    # Get port from environment variable, default to 5000
-    port = int(os.environ.get("PORT", 5000))
+    # Single-instance lock file
+    LOCK_FILE = os.path.join(tempfile.gettempdir(), "whispertrans.lock")
 
-    # Check if the default port is available, if not try to find an available one
+    def acquire_lock():
+        """Acquire a file lock to ensure only one instance runs."""
+        try:
+            # Create lock file directory if needed
+            lock_dir = os.path.dirname(LOCK_FILE)
+            if not os.path.exists(lock_dir):
+                os.makedirs(lock_dir)
+
+            lock_fd = open(LOCK_FILE, "w")
+            try:
+                # Try to acquire exclusive, non-blocking lock
+                print(f"Attempting to acquire lock: {LOCK_FILE}")
+                fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                lock_fd.write(str(os.getpid()))
+                lock_fd.flush()
+                print(f"Lock acquired successfully, PID: {os.getpid()}")
+                # Keep lock file alive while process runs
+                # Lock will be automatically released when process exits and file descriptor is closed
+                return True
+            except (IOError, OSError) as e:
+                lock_fd.close()
+                # Another instance is already running
+                print(f"WhisperTrans is already running! Error: {e}")
+                # Also check if the process from lock file is actually alive
+                try:
+                    with open(LOCK_FILE, "r") as f:
+                        pid = int(f.read().strip())
+                        try:
+                            os.kill(pid, 0)
+                            print(f"Existing instance PID: {pid}")
+                        except OSError:
+                            print(f"Stale lock file found, removing...")
+                            try:
+                                os.unlink(LOCK_FILE)
+                            except:
+                                pass
+                except:
+                    pass
+                return False
+        except Exception as e:
+            print(f"Could not acquire lock: {e}")
+            return False
+
+    def release_lock(lock_fd):
+        """Release the file lock (only call on explicit shutdown)."""
+        try:
+            fcntl.flock(lock_fd, fcntl.LOCK_UN)
+            lock_fd.close()
+            if os.path.exists(LOCK_FILE):
+                os.unlink(LOCK_FILE)
+        except Exception:
+            pass
+
+    def wait_for_server(url, timeout=10):
+        """Wait until the server is ready to accept connections."""
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            try:
+                with urllib.request.urlopen(url, timeout=1) as response:
+                    if response.getcode() == 200:
+                        return True
+            except (URLError, socket.timeout, ConnectionRefusedError):
+                time.sleep(0.1)
+        return False
+
+    def open_browser(url):
+        """Open browser after server is ready."""
+        if wait_for_server(url, timeout=10):
+            webbrowser.open(url)
+            print(f"\n✓ WhisperTrans is running at: {url}")
+            print("✓ Web interface opened in your default browser")
+            print("✓ Press Ctrl+C to stop the server\n")
+        else:
+            print(f"\n⚠ Server started but may not be ready: {url}")
+
     def check_port_availability(port_num):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             try:
                 s.bind(("0.0.0.0", port_num))
                 return True, port_num
             except OSError:
-                # Port is in use, try to find next available port
                 return False, port_num
 
-    def open_browser(url):
-        """Open browser after a short delay to ensure server is ready."""
-        time.sleep(1.5)  # Wait for server to start
-        webbrowser.open(url)
-        print(f"\n✓ WhisperTrans is running at: {url}")
-        print("✓ Web interface opened in your default browser")
-        print("✓ Press Ctrl+C to stop the server\n")
+    # Try to acquire lock first - exit if another instance is running
+    if not acquire_lock():
+        print("Only one instance of WhisperTrans can run at a time.")
+        print("If you believe this is incorrect, delete:", LOCK_FILE)
+        print("Exiting now...")
+        import sys
+
+        sys.exit(1)
+
+    # Get port from environment variable, default to 5000
+    port = int(os.environ.get("PORT", 5000))
 
     # Try the specified port first
     is_available, _ = check_port_availability(port)
 
     if is_available:
-        # Open browser in a separate thread
+        # Start server in background thread (non-daemon to prevent premature exit)
         url = f"http://127.0.0.1:{port}"
-        browser_thread = threading.Thread(target=open_browser, args=(url,), daemon=True)
-        browser_thread.start()
-        app.run(host="0.0.0.0", port=port)
+
+        # Start heartbeat monitor thread
+        heartbeat_thread = threading.Thread(target=monitor_heartbeat, daemon=True)
+        heartbeat_thread.start()
+
+        server_thread = threading.Thread(
+            target=lambda: app.run(host="0.0.0.0", port=port, use_reloader=False),
+            daemon=False,
+        )
+        server_thread.start()
+
+        # Open browser after server is ready
+        open_browser(url)
+
+        # Keep main thread alive until server stops
+        try:
+            while server_thread.is_alive():
+                server_thread.join(0.5)
+        except KeyboardInterrupt:
+            print("\n\nShutting down WhisperTrans...")
+            os._exit(0)
     else:
         # Find next available port starting from the default
         print(f"Port {port} is in use, trying to find an available port...")
@@ -154,11 +315,30 @@ if __name__ == "__main__":
             is_available, _ = check_port_availability(attempt_port)
             if is_available:
                 print(f"Starting server on port {attempt_port}")
-                # Open browser in a separate thread with the actual port
                 url = f"http://127.0.0.1:{attempt_port}"
-                browser_thread = threading.Thread(target=open_browser, args=(url,), daemon=True)
-                browser_thread.start()
-                app.run(host="0.0.0.0", port=attempt_port)
+
+                # Start heartbeat monitor thread
+                heartbeat_thread = threading.Thread(
+                    target=monitor_heartbeat, daemon=True
+                )
+                heartbeat_thread.start()
+
+                server_thread = threading.Thread(
+                    target=lambda: app.run(
+                        host="0.0.0.0", port=attempt_port, use_reloader=False
+                    ),
+                    daemon=False,
+                )
+                server_thread.start()
+                open_browser(url)
+                try:
+                    while server_thread.is_alive():
+                        server_thread.join(0.5)
+                except KeyboardInterrupt:
+                    print("\n\nShutting down WhisperTrans...")
+                    os._exit(0)
                 break
         else:
-            print("Could not find an available port. Please free up a port in the range and try again.")
+            print(
+                "Could not find an available port. Please free up a port in the range and try again."
+            )

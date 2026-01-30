@@ -241,6 +241,55 @@
     
     <script>
       document.addEventListener('DOMContentLoaded', function() {
+        // Heartbeat to keep server alive
+        let heartbeatInterval;
+
+        function sendHeartbeat() {
+          console.log('Sending heartbeat...');
+          fetch('/heartbeat', {
+            method: 'POST',
+            keepalive: true
+          })
+          .then(response => {
+            console.log('Heartbeat sent successfully');
+          })
+          .catch(err => {
+            console.warn('Failed to send heartbeat:', err);
+          });
+        }
+
+        // Send heartbeat every 10 seconds
+        function startHeartbeat() {
+          console.log('Starting heartbeat interval');
+          sendHeartbeat();
+          heartbeatInterval = setInterval(sendHeartbeat, 10000);
+        }
+
+        // Stop heartbeat when page is hidden (tab switched or browser minimized)
+        function stopHeartbeat() {
+          if (heartbeatInterval) {
+            clearInterval(heartbeatInterval);
+            heartbeatInterval = null;
+          }
+        }
+
+        // Start heartbeat on page load
+        startHeartbeat();
+
+        // Handle visibility changes
+        document.addEventListener('visibilitychange', function() {
+          if (document.hidden) {
+            // Page hidden - user may close the browser
+            // Don't stop heartbeat yet, give some grace period
+            console.log('Page hidden');
+          } else {
+            // Page visible again - ensure heartbeat is running
+            if (!heartbeatInterval) {
+              startHeartbeat();
+            }
+          }
+        });
+
         // Drag and drop functionality
         const dropZone = document.getElementById('dropZone');
         const audioFileInput = document.getElementById('audioFileInput');

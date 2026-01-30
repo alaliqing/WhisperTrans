@@ -32,6 +32,7 @@ def check_dependencies():
     # Check for PyInstaller
     try:
         import PyInstaller
+
         print(f"✓ PyInstaller found: {PyInstaller.__version__}")
     except ImportError:
         print("✗ PyInstaller not found. Install with: pip install pyinstaller")
@@ -44,7 +45,9 @@ def check_dependencies():
             subprocess.run(["brew", "install", "ffmpeg"], check=True)
             print("✓ ffmpeg installed")
         except subprocess.CalledProcessError:
-            print("✗ Failed to install ffmpeg. Please install manually: brew install ffmpeg")
+            print(
+                "✗ Failed to install ffmpeg. Please install manually: brew install ffmpeg"
+            )
             sys.exit(1)
     else:
         print("✓ ffmpeg found")
@@ -75,12 +78,28 @@ def create_app_icon():
         if shutil.which("convert"):
             print("  Using ImageMagick to create icon...")
             try:
-                subprocess.run([
-                    "convert", "-size", "1024x1024", "xc:'#4f46e5'",
-                    "-font", "Helvetica-Bold", "-pointsize", "400", "-fill", "white",
-                    "-gravity", "center", "-annotate", "+0+0", "WT",
-                    icon_src
-                ], check=True, capture_output=True)
+                subprocess.run(
+                    [
+                        "convert",
+                        "-size",
+                        "1024x1024",
+                        "xc:'#4f46e5'",
+                        "-font",
+                        "Helvetica-Bold",
+                        "-pointsize",
+                        "400",
+                        "-fill",
+                        "white",
+                        "-gravity",
+                        "center",
+                        "-annotate",
+                        "+0+0",
+                        "WT",
+                        icon_src,
+                    ],
+                    check=True,
+                    capture_output=True,
+                )
                 print(f"  ✓ Created source icon: {icon_src}")
             except subprocess.CalledProcessError:
                 print("  ✗ Failed to create icon with ImageMagick")
@@ -103,23 +122,40 @@ def create_app_icon():
     sizes = [16, 32, 64, 128, 256, 512, 1024]
     for size in sizes:
         # Regular size
-        subprocess.run([
-            "sips", "-z", str(size), str(size),
-            str(icon_src), "--out", str(iconset_dir / f"icon_{size}x{size}.png")
-        ], check=True, capture_output=True)
+        subprocess.run(
+            [
+                "sips",
+                "-z",
+                str(size),
+                str(size),
+                str(icon_src),
+                "--out",
+                str(iconset_dir / f"icon_{size}x{size}.png"),
+            ],
+            check=True,
+            capture_output=True,
+        )
 
         # Retina (2x) size
         if size * 2 <= 1024:
-            subprocess.run([
-                "sips", "-z", str(size * 2), str(size * 2),
-                str(icon_src), "--out", str(iconset_dir / f"icon_{size}x{size}@2x.png")
-            ], check=True, capture_output=True)
+            subprocess.run(
+                [
+                    "sips",
+                    "-z",
+                    str(size * 2),
+                    str(size * 2),
+                    str(icon_src),
+                    "--out",
+                    str(iconset_dir / f"icon_{size}x{size}@2x.png"),
+                ],
+                check=True,
+                capture_output=True,
+            )
 
     # Create .icns from iconset
-    subprocess.run([
-        "iconutil", "-c", "icns",
-        str(iconset_dir), "-o", str(icon_dst)
-    ], check=True)
+    subprocess.run(
+        ["iconutil", "-c", "icns", str(iconset_dir), "-o", str(icon_dst)], check=True
+    )
 
     # Cleanup iconset
     shutil.rmtree(iconset_dir)
@@ -134,7 +170,7 @@ def create_simple_icon_fallback(icon_path):
     from PIL import Image, ImageDraw, ImageFont
 
     # Create a 1024x1024 image with indigo background
-    img = Image.new('RGB', (1024, 1024), color='#4f46e5')
+    img = Image.new("RGB", (1024, 1024), color="#4f46e5")
     draw = ImageDraw.Draw(img)
 
     # Draw "WT" text in white
@@ -153,7 +189,7 @@ def create_simple_icon_fallback(icon_path):
     x = (1024 - text_width) / 2
     y = (1024 - text_height) / 2
 
-    draw.text((x, y), text, fill='white', font=font)
+    draw.text((x, y), text, fill="white", font=font)
 
     # Save the image
     icon_path.parent.mkdir(parents=True, exist_ok=True)
@@ -175,9 +211,12 @@ def build_app(arch):
     cmd = [
         "pyinstaller",
         "--clean",
+        "-y",
         str(spec_file),
-        "--distpath", str(DIST_DIR),
-        "--workpath", str(BUILD_DIR)
+        "--distpath",
+        str(DIST_DIR),
+        "--workpath",
+        str(BUILD_DIR),
     ]
 
     print(f"Running: {' '.join(cmd)}")
@@ -197,6 +236,16 @@ def build_app(arch):
     else:
         print("✗ Executable missing from bundle")
         sys.exit(1)
+
+    # Copy correct Info.plist to override PyInstaller's minimal version
+    info_plist_src = PACKAGING_DIR / "Info.plist"
+    info_plist_dst = app_path / "Contents" / "Info.plist"
+    shutil.copy2(info_plist_src, info_plist_dst)
+    print("✓ Updated Info.plist with correct settings")
+
+    # Remove quarantine attributes to prevent -600 error
+    subprocess.run(["xattr", "-cr", str(app_path)], check=True)
+    print("✓ Removed quarantine attributes")
 
     return app_path
 
@@ -232,14 +281,21 @@ def build_dmg(app_path, arch):
 
     # Build DMG using hdiutil
     print("Creating disk image...")
-    subprocess.run([
-        "hdiutil", "create",
-        "-volname", "WhisperTrans",
-        "-srcfolder", str(temp_dmg_dir),
-        "-ov",
-        "-format", "UDZO",
-        str(dmg_path)
-    ], check=True)
+    subprocess.run(
+        [
+            "hdiutil",
+            "create",
+            "-volname",
+            "WhisperTrans",
+            "-srcfolder",
+            str(temp_dmg_dir),
+            "-ov",
+            "-format",
+            "UDZO",
+            str(dmg_path),
+        ],
+        check=True,
+    )
 
     # Cleanup
     shutil.rmtree(temp_dmg_dir)

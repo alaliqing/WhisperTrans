@@ -12,6 +12,12 @@ block_cipher = None
 # Get the project root directory
 project_root = os.path.dirname(SPECPATH)
 
+# Find whisper package location to include its assets
+import whisper
+whisper_dir = os.path.dirname(whisper.__file__)
+whisper_assets = os.path.join(whisper_dir, 'assets')
+whisper_normalizers = os.path.join(whisper_dir, 'normalizers')
+
 # Analysis phase - collect all dependencies
 a = Analysis(
     [os.path.join(project_root, 'web_app.py')],
@@ -25,6 +31,9 @@ a = Analysis(
         (os.path.join(project_root, '.env.example'), '.'),
         # Include whisper_trans.py module
         (os.path.join(project_root, 'whisper_trans.py'), '.'),
+        # Include whisper assets (mel_filters.npz, tiktoken files)
+        (whisper_assets, 'whisper/assets'),
+        (whisper_normalizers, 'whisper/normalizers'),
     ],
     hiddenimports=[
         # Flask hidden imports
@@ -95,7 +104,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,  # Use UPX compression to reduce size by ~30-40%
-    console=True,  # Hide console window for GUI app
+    console=False,  # Hide console window for GUI app
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
