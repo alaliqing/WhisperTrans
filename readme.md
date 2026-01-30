@@ -42,7 +42,7 @@ That's it! No Python setup required.
 
 
 
-### Option 3: Git Clone 💻
+### Option 2: Git Clone 💻
 
 For developers or users who want to modify the code:
 
@@ -65,7 +65,7 @@ cd WhisperTrans
 
 ### Running from Source Setup 🔧
 
-This section only applies if you installed via Git Clone or ZIP. DMG and Homebrew users can skip this.
+This section only applies if you installed via Git Clone or ZIP. DMG users can skip this.
 
 #### 1. Setup (One-time)
 
