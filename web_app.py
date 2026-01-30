@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import multiprocessing
 import atexit
 import os
 import shutil
@@ -175,6 +176,7 @@ def monitor_heartbeat():
 
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     import fcntl
     import sys
     import socket
