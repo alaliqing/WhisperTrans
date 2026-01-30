@@ -183,6 +183,11 @@ if __name__ == "__main__":
     import urllib.request
     from urllib.error import URLError
 
+    # Add app's MacOS directory to PATH for bundled binaries like ffmpeg
+    app_dir = os.path.dirname(os.path.abspath(__file__))
+    app_macos = os.path.join(app_dir, "Contents", "MacOS")
+    os.environ["PATH"] = app_macos + os.pathsep + os.environ.get("PATH", "")
+
     # Single-instance lock file
     LOCK_FILE = os.path.join(tempfile.gettempdir(), "whispertrans.lock")
 
