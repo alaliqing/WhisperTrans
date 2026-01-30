@@ -1,6 +1,6 @@
 # WhisperTrans
 
-Simple audio transcription tool for Mac (M1+ and Intel Macs). Convert any audio file to text using OpenAI's Whisper AI model.
+Simple audio transcription tool for Mac. Convert any audio file to text using OpenAI's Whisper AI model.
 
 ## Features
 
@@ -9,8 +9,7 @@ Simple audio transcription tool for Mac (M1+ and Intel Macs). Convert any audio 
 - Multiple output formats (TXT, SRT, VTT) 📝
 - 100+ languages supported 🌍
 - Privacy first - runs locally on your Mac 🔒
-- Works on Apple Silicon and Intel Macs 💻
-- GPU acceleration on Apple Silicon, CPU on Intel Macs
+- GPU acceleration on Apple Silicon
 - No Python setup required for DMG/Homebrew installation
 
 ## Prerequisites 📦
@@ -31,21 +30,19 @@ After installation, restart your terminal.
 
 ## Installation 📥
 
-### Option 1: Download DMG (Recommended for Most Users) 🖥️
+### Option 1: Download DMG 🖥️
 
-The easiest way to install WhisperTrans on your Mac:
+The easiest way to install WhisperTrans:
 
 1. **Download the latest DMG** from [Releases](https://github.com/alaliqing/WhisperTrans/releases)
-   - Apple Silicon (M1/M2/M3): `WhisperTrans-*.arm64.dmg`
-   - Intel Macs: `WhisperTrans-*.x86_64.dmg`
-2. **Open the DMG** and drag WhisperTrans to Applications
+2. **Open DMG** and drag WhisperTrans to Applications
 3. **Launch** from Applications folder
 
 That's it! No Python setup required.
 
 ### Option 2: Homebrew Cask 🍺
 
-If you have Homebrew installed, you can install WhisperTrans with one command:
+If you have Homebrew installed:
 
 ```bash
 brew install --cask whisper-trans
@@ -56,9 +53,9 @@ Then launch WhisperTrans from your Applications folder or run:
 open -a WhisperTrans
 ```
 
-### Option 3: Git Clone (For Developers) 💻
+### Option 3: Git Clone 💻
 
-Advanced users who want to modify the code:
+For developers or users who want to modify the code:
 
 **First, install git if needed:**
 
@@ -125,21 +122,11 @@ Open the displayed URL in your browser (usually http://localhost:5000, terminal 
 
 **CLI:** The script guides you through file selection, model choice, format, and language options.
 
-## Performance by Mac Type 💻
+## Performance 💻
+- **Apple Silicon:** GPU acceleration available, 2-10 minutes for base model
+- **Intel Macs:** CPU-only processing, 20-60 minutes for base model (Git Clone only)
 
-**Apple Silicon (M1, M2, M3, etc.):**
-- GPU acceleration available (10-20x faster than Intel)
-- Recommended models: base, small, medium, large
-- Typical transcription time: 2-10 minutes (base model)
-- All features fully supported
-
-**Intel Macs (2010-2020 models):**
-- CPU-only processing (no GPU acceleration)
-- Recommended models: tiny, base only
-- Typical transcription time: 20-60 minutes (base model)
-- Medium/Large models: Not recommended (may take 2+ hours)
-
-**Note:** Intel Macs will work but with significantly degraded performance. For best experience, use Apple Silicon Macs or start with smaller models (tiny/base).
+Recommend using smaller models (tiny/base) on Intel Macs for best performance.
 
 ## AI Models
 
@@ -159,10 +146,10 @@ Open the displayed URL in your browser (usually http://localhost:5000, terminal 
 
 ## Requirements
 
-- macOS 11+ (Apple Silicon M1/M2/M3 OR Intel Macs 2010-2020)
+- macOS 11+ (Apple Silicon for DMG/Homebrew, Intel for Git Clone)
 - Python 3.9+
 - 100MB storage + up to 3GB for AI models
-- 4GB RAM minimum (8GB+ recommended for Intel Macs, 16GB+ for Apple Silicon with large models)
+- 4GB RAM minimum (8GB+ recommended)
 
 ## Configuration
 
@@ -195,12 +182,7 @@ MAX_UPLOAD_SIZE=200
 - "Download stalls": Check internet connection, first download is 75MB-3GB depending on model
 - "Slow transcription": First run is slower (model download), use smaller model (tiny/base)
 - "Poor accuracy": Specify language manually, use larger model (small/medium/large), ensure good audio quality
-
-**Intel Mac Specific Issues** 💻
-
-- "Transcription is very slow (30+ minutes)": This is expected on Intel Macs due to CPU-only processing. Try using 'tiny' model for faster results.
-- "Memory errors on medium/large models": Intel Macs typically have less memory. Stick to 'tiny' or 'base' models.
-- "Freezing during transcription": Reduce file size or use smaller model (tiny). Close other applications to free up memory.
+- "Transcription very slow (30+ minutes) on Intel Mac": Expected due to CPU-only processing. Use 'tiny' model for faster results.
 
 **Web UI Issues** 🌐
 
