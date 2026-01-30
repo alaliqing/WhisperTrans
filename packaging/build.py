@@ -250,6 +250,19 @@ def build_app(arch):
     shutil.copy2(info_plist_src, info_plist_dst)
     print("✓ Updated Info.plist with correct settings")
 
+    # Copy ffmpeg binary to app bundle
+    ffmpeg_path = shutil.which("ffmpeg")
+    if ffmpeg_path:
+        # Resolve symlinks to get real binary path
+        real_ffmpeg_path = os.path.realpath(ffmpeg_path)
+        ffmpeg_dst = app_path / "Contents" / "MacOS" / "ffmpeg"
+        shutil.copy2(real_ffmpeg_path, ffmpeg_dst)
+        # Make ffmpeg executable
+        ffmpeg_dst.chmod(0o755)
+        print(f"✓ Copied ffmpeg to app bundle: {ffmpeg_dst}")
+    else:
+        print("⚠ ffmpeg not found, app may not work properly")
+
     # Remove quarantine attributes to prevent -600 error
     subprocess.run(["xattr", "-cr", str(app_path)], check=True)
     print("✓ Removed quarantine attributes")
