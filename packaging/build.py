@@ -202,66 +202,13 @@ def build_app(arch):
 
     spec_file = PACKAGING_DIR / "WhisperTrans.spec"
 
-    # Convert favicon.svg to icon.icns for macOS app
-    icon_svg = PROJECT_ROOT / "static" / "favicon.svg"
+    # Use existing icon.icns if available, or show warning
     icon_dst = PACKAGING_DIR / "app-icon" / "icon.icns"
 
-    if icon_svg.exists():
-        print(f"✓ Found favicon.svg: {icon_svg}")
-
-        # Use sips to convert SVG to PNG at various sizes
-        iconset_dir = PACKAGING_DIR / "app-icon" / "icon.iconset"
-
-        if iconset_dir.exists():
-            shutil.rmtree(iconset_dir)
-        iconset_dir.mkdir(exist_ok=True)
-
-        sizes = [16, 32, 64, 128, 256, 512, 1024]
-        for size in sizes:
-            subprocess.run(
-                [
-                    "sips",
-                    "-z",
-                    str(size),
-                    str(size),
-                    "-s",
-                    str(icon_svg),
-                    "--out",
-                    str(iconset_dir / f"icon_{size}x{size}.png"),
-                ],
-                check=True,
-                capture_output=True,
-            )
-
-        # Create 2x versions for retina displays
-        for size in [16, 32, 64, 128, 256, 512]:
-            subprocess.run(
-                [
-                    "sips",
-                    "-z",
-                    str(size * 2),
-                    str(size * 2),
-                    "-s",
-                    str(icon_svg),
-                    "--out",
-                    str(iconset_dir / f"icon_{size}x{size}@2x.png"),
-                ],
-                check=True,
-                capture_output=True,
-            )
-
-        # Create .icns from iconset
-        subprocess.run(
-            ["iconutil", "-c", "icns", str(iconset_dir), "-o", str(icon_dst)],
-            check=True,
-        )
-
-        # Cleanup iconset
-        shutil.rmtree(iconset_dir)
-
-        print(f"✓ Created icon.icns from favicon.svg")
+    if icon_dst.exists():
+        print("✓ App icon already exists (icon.icns)")
     else:
-        print("⚠ favicon.svg not found in static/")
+        print("⚠ App icon not found, skipping icon generation")
 
     # Clean previous builds
     if BUILD_DIR.exists():
