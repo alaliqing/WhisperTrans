@@ -4,7 +4,7 @@ Simple audio transcription tool for Mac. Convert any audio file to text using Op
 
 ## Features
 
-- One-click installation with DMG or Homebrew ⚡
+- One-click installation with DMG ⚡
 - Web browser interface and CLI tool 🌐
 - Multiple output formats (TXT, SRT, VTT) 📝
 - 100+ languages supported 🌍
@@ -40,18 +40,7 @@ The easiest way to install WhisperTrans:
 
 That's it! No Python setup required.
 
-### Option 2: Homebrew Cask 🍺
 
-If you have Homebrew installed:
-
-```bash
-brew install --cask whisper-trans
-```
-
-Then launch WhisperTrans from your Applications folder or run:
-```bash
-open -a WhisperTrans
-```
 
 ### Option 3: Git Clone 💻
 
